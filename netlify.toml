@@ -1,0 +1,3 @@
+# Hosting the demo: publish the static site as is (no build step).
+[build]
+  publish = "site"

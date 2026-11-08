@@ -1,0 +1,52 @@
+{
+  "date": "Sample data",
+  "kpis": [
+    {
+      "n": "18",
+      "label": "open roles to apply to",
+      "tone": "good"
+    },
+    {
+      "n": "4",
+      "label": "new roles today (best: Lakeshore Photonics, 91)",
+      "tone": "hot"
+    },
+    {
+      "n": "2",
+      "label": "LinkedIn requests sent today",
+      "tone": ""
+    },
+    {
+      "n": "1",
+      "label": "new Boardy intro (Helio Grid)",
+      "tone": ""
+    },
+    {
+      "n": "3",
+      "label": "messages ready to send",
+      "tone": "hot"
+    },
+    {
+      "n": "5",
+      "label": "tutoring leads waiting",
+      "tone": ""
+    }
+  ],
+  "roles": 18,
+  "messages": 3,
+  "next": [
+    {
+      "what": "Granite Power Engineering intern",
+      "when": "Tomorrow"
+    },
+    {
+      "what": "Coffee chat, alumni mentor",
+      "when": "Mon, 10:00 AM"
+    },
+    {
+      "what": "Copperline Semiconductors co-op",
+      "when": "In 9 days"
+    }
+  ],
+  "generated": "sample"
+}

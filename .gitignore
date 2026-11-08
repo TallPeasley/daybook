@@ -1,0 +1,7 @@
+node_modules/
+.env
+.netlify/
+api/.daybook-key
+tools/refresh.log
+tools/.last-deploy.json
+data-snapshot-*.json
