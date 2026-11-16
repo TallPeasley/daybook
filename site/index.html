@@ -77,7 +77,15 @@ textarea:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .btn.sm{min-height:40px;padding:7px 11px;font-size:13px}
 .lnote{min-height:54px;margin:6px 0 4px;font-size:15px}
 .lead .row{gap:6px}
-/* Redesigned Tutoring Pipeline: 4-stage summary switcher, balanced 2-col board in All view, and compact uniform cards */
+/* Tutoring Section: Clean dual-mode tabs (Pipeline & Flyers Tracker), no side-scroll columns */
+.tutor-subnav{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;margin:8px 0 12px}
+.tutor-tab-btn{flex:1;font:inherit;font-size:13.5px;font-weight:600;padding:8px 12px;border:0;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background .15s,color .15s}
+.tutor-tab-btn[aria-selected="true"]{background:var(--teal);color:#fff;box-shadow:0 2px 8px rgba(14,107,99,.2)}
+.tutor-tab-btn[aria-selected="true"] .pill{background:rgba(255,255,255,.25);color:#fff}
+.tutor-pane{display:none}
+.tutor-pane.on{display:block}
+
+/* Stage bar */
 .stage-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0 10px}
 .stage-tile{font:inherit;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:8px 6px 7px;text-align:center;cursor:pointer;transition:background .15s,border-color .15s,transform .1s;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
 .stage-tile:active{transform:scale(.97)}
@@ -87,23 +95,52 @@ textarea:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .stage-tile[aria-pressed="true"] b,.stage-tile[aria-pressed="true"] span{color:var(--teal);font-weight:600}
 .tutor-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 10px}
 .tutor-bar input[type=search]{flex:1 1 160px;padding:9px 11px;min-height:40px}
-.lead-board{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:stretch}
-@media(min-width:520px){.lead-board.all-cols{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.lead-col{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px;height:100%;min-width:0}
-.lead-col-hdr{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 2px 6px;border-bottom:1px solid var(--line)}
-.lead-col-hdr h3{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0}
-.lead-col .job.lead{margin:0;background:var(--bg);border-color:var(--line);padding:10px 11px;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
-.lead-meta{font-size:12.5px;color:var(--muted);margin:2px 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lead-note-btn{font:inherit;width:100%;min-width:0;text-align:left;background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:6px 9px;margin:0 0 7px;font-size:12.5px;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:6px;line-height:1.35}
-.lead-col .lead-note-btn{background:var(--surface)}
-.lead-note-btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);min-width:0;flex:1}
-.lead-note-btn.empty span{color:var(--muted);font-style:italic}
-.lead-note-btn em{font-family:var(--mono);font-size:10.5px;font-style:normal;color:var(--teal);flex-shrink:0}
-.stage-seg{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:2px}
-.stage-seg button{font:inherit;font-size:11.5px;font-weight:500;padding:5px 2px;border:0;border-radius:7px;background:transparent;color:var(--muted);min-height:30px;cursor:pointer;transition:background .15s,color .15s}
-.stage-seg button[aria-pressed="true"]{background:var(--teal);color:#fff;font-weight:600}
-.col-more{font:inherit;font-family:var(--mono);font-size:11.5px;font-weight:500;padding:7px 10px;border-radius:8px;border:1px dashed var(--line);background:transparent;color:var(--teal);cursor:pointer;text-align:center;width:100%;margin-top:auto}
-.lead-empty{flex:1;display:flex;align-items:center;justify-content:center;padding:18px 8px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:12.5px;text-align:center}
+
+/* Lead Cards & Groups in Pipeline (Fluid vertical layout, no horizontal side-scroll) */
+.lead-group{margin-bottom:14px}
+.lead-group-hdr{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 6px;margin:12px 0 6px;border-bottom:1px solid var(--line)}
+.lead-group-hdr h3{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0;display:flex;align-items:center;gap:6px}
+.lead-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;transition:border-color .15s,box-shadow .15s}
+.lead-card .lead-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:nowrap}
+.lead-card .lead-title{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden}
+.lead-card .lead-name{font-family:var(--display);font-size:17px;font-weight:700;color:var(--ink);white-space:nowrap}
+.lead-card .lead-meta{font-size:13px;color:var(--muted);margin:4px 0 6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lead-card .lead-source{cursor:pointer;transition:transform .1s}
+.lead-card .lead-source:active{transform:scale(.95)}
+.lead-note-box{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;margin:6px 0 8px;font-size:13px;color:var(--ink);line-height:1.4}
+.lead-note-box.empty{color:var(--muted);font-style:italic}
+.lead-note-edit-btn{font:inherit;font-family:var(--mono);font-size:10.5px;color:var(--teal);background:none;border:0;cursor:pointer;padding:0;float:right;margin-left:6px;font-style:normal}
+.stage-seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:3px;margin-top:6px}
+.stage-seg button{font:inherit;font-size:11.5px;font-weight:500;padding:6px 2px;border:0;border-radius:7px;background:transparent;color:var(--muted);min-height:30px;cursor:pointer;transition:background .15s,color .15s}
+.stage-seg button[aria-pressed="true"]{background:var(--teal);color:#fff;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.lead-empty{padding:22px 10px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:13px;text-align:center}
+
+/* Flyers Tracker UI */
+.flyer-hero{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:4px 0 12px}
+@media(max-width:440px){.flyer-hero{grid-template-columns:repeat(2,1fr)}}
+.f-stat{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:9px 10px 8px;text-align:center}
+.f-stat b{display:block;font-family:var(--display);font-size:22px;line-height:1;color:var(--ink)}
+.f-stat span{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.02em}
+.f-stat.alert b{color:var(--amber)}
+.f-stat.good b{color:var(--green)}
+.flyer-alert-box{background:var(--amber-soft);border:1px solid var(--amber);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.flyer-alert-box b{color:var(--amber)}
+.flyer-card{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:12px 14px;margin-bottom:10px;position:relative;transition:border-color .15s}
+.flyer-card.low-stock{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber-soft)}
+.flyer-card .flyer-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.flyer-card .flyer-name{font-family:var(--display);font-size:16.5px;font-weight:700;color:var(--ink);margin:0}
+.flyer-card .flyer-area{font-size:12.5px;color:var(--muted);margin-top:1px}
+.flyer-detail-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:6px 0}
+.tear-strip{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin:8px 0 10px}
+.tear-strip-hdr{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-family:var(--mono);color:var(--muted);margin-bottom:6px}
+.tear-strip-hdr b{color:var(--ink)}
+.tear-tabs-row{display:flex;gap:4px;overflow-x:auto;padding-bottom:3px}
+.tear-tab{flex:1;min-width:14px;max-width:26px;height:24px;border-radius:3px 3px 6px 6px;border:1px solid var(--line);border-top:2px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;font-family:var(--mono);transition:background .15s}
+.tear-tab.active{background:var(--teal);border-color:var(--teal);color:#fff}
+.tear-tab.low{background:var(--amber);border-color:var(--amber);color:#fff}
+.tear-tab.taken{background:transparent;border-style:dashed;color:var(--muted);opacity:.4}
+.flyer-lead-link{background:var(--teal-soft);border:1px dashed var(--teal);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--teal);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer}
+.flyer-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}
 details.tlist .body{padding:0 8px 4px}details.tlist .item{border:0;border-top:1px solid var(--line);border-radius:0;margin:0;padding:8px 2px}
 .fresh{font-family:var(--mono);font-size:11.5px;color:var(--green);margin-top:2px}.fresh.stale{color:var(--red);font-weight:500}
 a.kpi{color:inherit;text-decoration:none;display:block}a.kpi:active{background:var(--teal-soft);transform:scale(.98)}a.kpi:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
@@ -232,25 +269,64 @@ dialog#about::backdrop{background:rgba(5,12,11,.55)}
 </section>
 
 <section class="view" id="v-tutoring">
-  <p class="note">Your tutoring pipeline. Tap a stage tile to focus on one column, or view all columns side-by-side. Bark unlocks cost credits, so nothing is unlocked automatically.</p>
-  <div class="stage-bar" id="leadStages" role="group" aria-label="Filter leads by stage"></div>
-  <div class="tutor-bar">
-    <input type="search" id="leadQ" placeholder="Search name, subject or city" aria-label="Search tutoring leads">
-    <button class="chip" type="button" id="leadAllBtn" aria-pressed="true">All stages</button>
-    <button class="chip" type="button" id="leadAddToggle" aria-expanded="false">+ Add lead</button>
+  <div class="tutor-subnav" role="tablist" aria-label="Tutoring sections">
+    <button type="button" class="tutor-tab-btn" id="tutorTabPipe" data-ttab="pipeline" aria-selected="true">
+      <span>Pipeline</span><span class="pill" id="badgePipeCount">0</span>
+    </button>
+    <button type="button" class="tutor-tab-btn" id="tutorTabFlyers" data-ttab="flyers" aria-selected="false">
+      <span>Flyers Tracker</span><span class="pill" id="badgeFlyersCount">0</span>
+    </button>
   </div>
-  <div id="leadAddWrap" hidden style="margin-bottom:10px">
-    <form class="stack" id="leadForm" style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px">
-      <input type="text" name="n" placeholder="Student name" aria-label="Name" required>
-      <input type="text" name="d" placeholder="Grade and subject (e.g. Gr 11 Chemistry)" aria-label="Grade and subject">
-      <input type="text" name="w" placeholder="Where &amp; times (remote or city, days)" aria-label="Where">
-      <input type="text" name="s" placeholder="Source (Bark, flyer, referral...)" aria-label="Source">
-      <textarea name="x" rows="2" placeholder="Notes" aria-label="Notes"></textarea>
-      <div class="row"><button class="btn sm p">Save lead</button><button class="btn sm" type="button" id="leadAddCancel">Cancel</button></div>
-    </form>
+
+  <!-- Pipeline Tab -->
+  <div class="tutor-pane on" id="panePipeline">
+    <div class="stage-bar" id="leadStages" role="group" aria-label="Filter leads by stage"></div>
+    <div class="tutor-bar">
+      <input type="search" id="leadQ" placeholder="Search name, subject, city or flyer" aria-label="Search tutoring leads">
+      <button class="chip" type="button" id="leadAllBtn" aria-pressed="true">All</button>
+      <button class="chip" type="button" id="leadAddToggle" aria-expanded="false">+ Add lead</button>
+    </div>
+    <div id="leadAddWrap" hidden style="margin-bottom:10px">
+      <form class="stack" id="leadForm" style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px">
+        <input type="text" name="n" placeholder="Student name" aria-label="Name" required>
+        <input type="text" name="d" placeholder="Grade and subject (e.g. Gr 11 Chemistry)" aria-label="Grade and subject">
+        <input type="text" name="w" placeholder="Where &amp; times (remote or city, days)" aria-label="Where">
+        <input type="text" name="s" placeholder="Source (Bark, Flyer, Referral...)" aria-label="Source">
+        <textarea name="x" rows="2" placeholder="Notes" aria-label="Notes"></textarea>
+        <div class="row"><button class="btn sm p">Save lead</button><button class="btn sm" type="button" id="leadAddCancel">Cancel</button></div>
+      </form>
+    </div>
+    <div class="demo-try">
+      <span><b>Intake channels:</b> Gemini emails new leads, and flyers bring local parent calls.</span>
+      <button class="btn sm p" type="button" data-fakelead="1">+ Simulate Gemini lead</button>
+    </div>
+    <div id="leads"></div>
   </div>
-  <div class="demo-try"><span><b>Try it:</b> Gemini emails new leads and they land here tagged "just in".</span><button class="btn sm p" type="button" data-fakelead="1">+ Simulate Gemini lead</button></div>
-  <div id="leads"></div>
+
+  <!-- Flyers Tab -->
+  <div class="tutor-pane" id="paneFlyers">
+    <div class="flyer-hero" id="flyerHero"></div>
+    <div id="flyerAlerts"></div>
+    <div class="tutor-bar">
+      <input type="search" id="flyerQ" placeholder="Search spot name, area or notes" aria-label="Search flyer spots">
+      <button class="chip" type="button" id="flyerFilterAll" data-ff="all" aria-pressed="true">All spots</button>
+      <button class="chip" type="button" id="flyerFilterRestock" data-ff="restock" aria-pressed="false">Needs restock</button>
+      <button class="chip" type="button" id="flyerAddToggle" aria-expanded="false">+ Log flyer spot</button>
+    </div>
+    <div id="flyerAddWrap" hidden style="margin-bottom:12px">
+      <form class="stack" id="flyerForm" style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px">
+        <input type="text" name="n" placeholder="Spot name (e.g. Waterloo Central Library)" aria-label="Spot name" required>
+        <input type="text" name="loc" placeholder="Placement area (e.g. Teen Study Hall Bulletin)" aria-label="Placement">
+        <div class="row">
+          <input type="number" name="total" placeholder="Tear-offs (e.g. 10)" aria-label="Tabs" value="10" min="1" max="25" style="width:120px">
+          <input type="text" name="date" placeholder="Date posted (YYYY-MM-DD)" aria-label="Date posted" style="flex:1">
+        </div>
+        <textarea name="notes" rows="2" placeholder="Notes (permission, corkboard spot, batch #)" aria-label="Notes"></textarea>
+        <div class="row"><button class="btn sm p">Save flyer spot</button><button class="btn sm" type="button" id="flyerAddCancel">Cancel</button></div>
+      </form>
+    </div>
+    <div id="flyersList"></div>
+  </div>
 </section>
 
 <section class="view" id="v-updates">
@@ -409,14 +485,22 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 let st={jobs:{},msgs:{}},ref=null,filter='todo',query='',chain=Promise.resolve(),synced=window.DAYBOOK_DEMO?'this browser (demo)':'this phone';
 try{const x=JSON.parse(localStorage.getItem('cod_state')||'null');if(x&&x.jobs)st=x}catch(e){}
 st.done=st.done||{};
-/* To-dos, notes for Claude/Gemini, tutoring leads: saved per phone under 'daybook_mine'. */
-let M={todos:[],notes:{claude:[],gemini:[],boardy:[]},leads:{},myLeads:[],set:{email:'',tt:''}};
+/* To-dos, notes for Claude/Gemini, tutoring leads, flyer drops: saved per phone under 'daybook_mine'. */
+const DEFAULT_FLYERS=[
+ {id:'f_wcl',n:'Waterloo Central Library',loc:'Teen Study Hall Corkboard',date:'2026-11-01',total:10,rem:2,calls:3,notes:'Grace saw this one. High student traffic near study pods.'},
+ {id:'f_ucr',n:'Uptown Coffee Roasters',loc:'Community Board by Pickup Counter',date:'2026-11-04',total:10,rem:7,calls:1,notes:'Staff approved on the corkboard.'},
+ {id:'f_chc',n:'Cameron Heights CI Kiosk',loc:'High School Walkway Bulletin',date:'2026-11-08',total:12,rem:4,calls:2,notes:'Great visibility for Gr 11/12 math & physics.'},
+ {id:'f_lcc',n:'Laurelwood Community Centre',loc:'Entrance Foyer Board',date:'2026-10-25',total:10,rem:0,calls:1,notes:'All tear-offs gone! Restock printed batch #3.'},
+ {id:'f_rim',n:'RIM Park Sportsplex',loc:'Lobby Arena Board',date:'2026-11-10',total:10,rem:9,calls:0,notes:'Posted beside rink 2 bulletin.'}
+];
+let M={todos:[],notes:{claude:[],gemini:[],boardy:[]},leads:{},myLeads:[],flyers:DEFAULT_FLYERS.slice(),set:{email:'',tt:''}};
 try{const y=JSON.parse(localStorage.getItem('daybook_mine')||'null');if(y)M=Object.assign(M,y)}catch(e){}
+if(!Array.isArray(M.flyers)||!M.flyers.length)M.flyers=DEFAULT_FLYERS.slice();
 function saveM(){try{localStorage.setItem('daybook_mine',JSON.stringify(M))}catch(e){}}
 let LIVE=[];try{LIVE=JSON.parse(localStorage.getItem('daybook_live')||'[]')}catch(e){}
 const SEEDLEADS0=[
  {id:'bark_omar',n:'Omar',d:'Gr 8 Math',w:'Remote, flexible',s:'Bark',x:'Sent Bark intro message, waiting on reply.',status:'contacted'},
- {id:'flyer_grace',n:'Grace',d:'Gr 11 Functions',w:'Library, Saturdays',s:'Flyer',x:'Called once, left a voicemail.',status:'contacted'},
+ {id:'flyer_grace',n:'Grace',d:'Gr 11 Functions',w:'Library, Saturdays',s:'Flyer',spot:'Waterloo Central Library',x:'Called once, left a voicemail. Saw tear-off flyer at Central Library.',status:'contacted'},
  {id:'stu_lucas',n:'Lucas',d:'Gr 10 Math',w:'Remote, Wednesdays 5 PM',s:'Referral',x:'Weekly sessions, working on quadratics.',status:'booked'},
  {id:'stu_chloe',n:'Chloe',d:'Gr 12 Physics',w:'Remote, Sundays 2 PM',s:'Bark',x:'Kinematics & dynamics review.',status:'booked'},
  {id:'bark_ben',n:'Ben',d:'Gr 11 Functions',w:'In person, west end',s:'Bark',x:'Passed: too far to travel.',status:'closed'},
@@ -459,8 +543,9 @@ function liveStats(){
  jobs.forEach(j=>{const v=st.jobs[j.id];if(v==='applied')appliedJobs++;else if(v==='skip')skipJobs++;else openJobs++});
  const sentMsgs=msgs.filter(m=>st.msgs[m.id]).length,openMsgs=msgs.length-sentMsgs;
  const newLeads=leads.filter(l=>l.st==='new').length;
+ const flyerRestocks=(M.flyers||[]).filter(f=>f.rem<=2).length;
  const attn=(P.attn||[]),doneAttn=attn.filter(a=>st.done[doneKey(a)]).length,openAttn=attn.length-doneAttn;
- return {openJobs,appliedJobs,skipJobs,openMsgs,sentMsgs,newLeads,openAttn,doneAttn,totalAttn:attn.length};
+ return {openJobs,appliedJobs,skipJobs,openMsgs,sentMsgs,newLeads,flyerRestocks,openAttn,doneAttn,totalAttn:attn.length};
 }
 
 function renderToday(){
@@ -470,7 +555,7 @@ function renderToday(){
   let n=k[0],lbl=k[1],tone=k[2]||'';
   if(/open roles/i.test(lbl)){n=String(S.openJobs);lbl='open roles to apply to'+(S.appliedJobs?' ('+S.appliedJobs+' applied)':'');tone=S.openJobs?'good':''}
   else if(/messages ready/i.test(lbl)){n=String(S.openMsgs);lbl=S.openMsgs===1?'message ready to send':'messages ready to send'+(S.sentMsgs?' ('+S.sentMsgs+' sent)':'');tone=S.openMsgs?'hot':'good'}
-  else if(/tutoring leads/i.test(lbl)){n=String(S.newLeads);lbl=S.newLeads===1?'tutoring lead waiting':'tutoring leads waiting';tone=S.newLeads>5?'hot':''}
+  else if(/tutoring leads/i.test(lbl)){n=String(S.newLeads);lbl=(S.newLeads===1?'tutoring lead waiting':'tutoring leads waiting')+(S.flyerRestocks?' ('+S.flyerRestocks+' flyer restock)':'');tone=S.newLeads>5||S.flyerRestocks?'hot':''}
   return [n,lbl,tone];
  });
  $('#kpis').innerHTML=kpis.map(k=>{const h=kpiHref(k[1]),inner='<b>'+esc(k[0])+'</b><span>'+esc(k[1])+(h?' &rsaquo;':'')+'</span>';return h?'<a class="kpi '+k[2]+'" href="'+h+'">'+inner+'</a>':'<div class="kpi '+k[2]+'">'+inner+'</div>'}).join('');
@@ -605,49 +690,187 @@ function loadData(){if(!window.DAYBOOK_API)return;fetch(DAYBOOK_API.url+'/data',
  Object.keys(P).forEach(k=>delete P[k]);Object.assign(P,j.P);DATA.jobs=j.DATA.jobs;DATA.msgs=j.DATA.msgs;
  renderToday();renderUpd();all();renderLeads()}).catch(()=>{})}
 const LST=[['new','New leads','New'],['contacted','Contacted','Contacted'],['booked','Students','Student'],['closed','Closed','Closed']];
-let leadFilter='all',leadQuery='',editingLeadNote=null,expandedCols={};
-function loadLeads(){if(!window.DAYBOOK_API)return;fetch(DAYBOOK_API.url+'/leads',{headers:{'x-daybook-key':DAYBOOK_API.key}}).then(r=>r.ok?r.json():Promise.reject()).then(j=>{LIVE=j.leads||[];try{localStorage.setItem('daybook_live',JSON.stringify(LIVE))}catch(e){}renderLeads();renderToday()}).catch(()=>{})}
+let leadFilter='all',leadQuery='',editingLeadNote=null;
+let tutorTab='pipeline',flyerFilter='all',flyerQuery='';
+
+function setTutorTab(tab){
+ tutorTab=tab;
+ const isPipe=tab==='pipeline';
+ const pipeBtn=$('#tutorTabPipe'),flyersBtn=$('#tutorTabFlyers');
+ if(pipeBtn)pipeBtn.setAttribute('aria-selected',isPipe?'true':'false');
+ if(flyersBtn)flyersBtn.setAttribute('aria-selected',!isPipe?'true':'false');
+ const pPipe=$('#panePipeline'),pFly=$('#paneFlyers');
+ if(pPipe)pPipe.classList.toggle('on',isPipe);
+ if(pFly)pFly.classList.toggle('on',!isPipe);
+ if(isPipe)renderLeads();
+ else renderFlyers();
+}
+
+function loadLeads(){if(!window.DAYBOOK_API)return;fetch(DAYBOOK_API.url+'/leads',{headers:{'x-daybook-key':DAYBOOK_API.key}}).then(r=>r.ok?r.json():Promise.reject()).then(j=>{LIVE=j.leads||[];try{localStorage.setItem('daybook_live',JSON.stringify(LIVE))}catch(e){}renderLeads();renderFlyers();renderToday()}).catch(()=>{})}
+
+function renderFlyers(){
+ const flyers=M.flyers||[],q=flyerQuery.toLowerCase();
+ const totalSpots=flyers.length;
+ const lowStockSpots=flyers.filter(f=>f.rem<=2);
+ const restockCount=lowStockSpots.length;
+ const totalPulled=flyers.reduce((s,f)=>s+Math.max(0,f.total-f.rem),0);
+ const flyerLeads=leadList().filter(l=>(l.s||'').toLowerCase().includes('flyer')).length;
+
+ const badgePipe=$('#badgePipeCount');if(badgePipe)badgePipe.textContent=leadList().length;
+ const badgeFlyers=$('#badgeFlyersCount');
+ if(badgeFlyers){
+  badgeFlyers.textContent=totalSpots;
+  badgeFlyers.className='pill '+(restockCount?'a':'t');
+  badgeFlyers.title=restockCount?restockCount+' spots need restock':'';
+ }
+
+ const hero=$('#flyerHero');
+ if(hero){
+  hero.innerHTML=`<div class="f-stat ${totalSpots?'good':''}"><b>${totalSpots}</b><span>Spots active</span></div>`
+   +`<div class="f-stat ${restockCount?'alert':''}"><b>${restockCount}</b><span>Need restock</span></div>`
+   +`<div class="f-stat"><b>${totalPulled}</b><span>Tabs pulled</span></div>`
+   +`<div class="f-stat ${flyerLeads?'good':''}"><b>${flyerLeads}</b><span>Flyer leads</span></div>`;
+ }
+
+ const alertBox=$('#flyerAlerts');
+ if(alertBox){
+  if(restockCount>0){
+   alertBox.innerHTML=`<div class="flyer-alert-box">`
+    +`<div><b>⚠️ Restock alert:</b> ${lowStockSpots.map(f=>esc(f.n)+' ('+f.rem+' left)').join(', ')}</div>`
+    +`<button class="btn sm p" type="button" data-frestockall="1">Restock All Low</button>`
+    +`</div>`;
+  } else {
+   alertBox.innerHTML='';
+  }
+ }
+
+ const btnAll=$('#flyerFilterAll'),btnRestock=$('#flyerFilterRestock');
+ if(btnAll)btnAll.setAttribute('aria-pressed',flyerFilter==='all'?'true':'false');
+ if(btnRestock)btnRestock.setAttribute('aria-pressed',flyerFilter==='restock'?'true':'false');
+
+ const filtered=flyers.filter(f=>{
+  if(flyerFilter==='restock'&&f.rem>2)return false;
+  if(q&&!(f.n+' '+(f.loc||'')+' '+(f.notes||'')).toLowerCase().includes(q))return false;
+  return true;
+ });
+
+ const container=$('#flyersList');
+ if(!container)return;
+ if(!filtered.length){
+  container.innerHTML='<div class="lead-empty">'+(q?'No flyer spots match your search.':'No flyer spots recorded yet. Tap "+ Log flyer spot" above to add your first flyer drop.')+'</div>';
+  return;
+ }
+
+ const allLeads=leadList();
+ container.innerHTML=filtered.map(f=>{
+  const isLow=f.rem<=2;
+  const statusPill=f.rem===0?'<span class="pill r">Empty · Restock</span>':isLow?`<span class="pill a">Low · ${f.rem} left</span>`:'<span class="pill g">Active</span>';
+  
+  let tabElements='';
+  for(let i=0;i<f.total;i++){
+   const taken=i>=f.rem;
+   tabElements+=`<span class="tear-tab ${taken?'taken':(isLow?'low':'active')}" title="${taken?'Tab taken':'Tab '+(i+1)+' ready'}">${taken?'✕':(i+1)}</span>`;
+  }
+
+  const linked=allLeads.filter(l=>(l.s||'').toLowerCase().includes('flyer')&&((l.spot&&l.spot.toLowerCase()===f.n.toLowerCase())||(l.x||'').toLowerCase().includes(f.n.toLowerCase())));
+  const linkedHtml=linked.length
+   ?linked.map(l=>`<div class="flyer-lead-link" data-gotolead="${esc(l.id)}"><span>✦ Generated lead: <b>${esc(l.n)}</b> (${esc(l.d||'Tutee')})</span><span class="pill t" style="text-transform:capitalize">${esc(l.st)} &rsaquo;</span></div>`).join('')
+   :'';
+
+  return `<div class="flyer-card ${isLow?'low-stock':''}" id="fcard_${esc(f.id)}">`
+   +`<div class="flyer-top"><div><h4 class="flyer-name">${esc(f.n)}</h4><div class="flyer-area">${esc(f.loc||'Community board')}</div></div>${statusPill}</div>`
+   +`<div class="flyer-detail-row"><span>Posted: <b>${esc(f.date||'Recent')}</b></span><span>Calls/Inquiries: <b>${f.calls||0}</b></span></div>`
+   +`<div class="tear-strip"><div class="tear-strip-hdr"><span>Tear-offs remaining</span><b>${f.rem} / ${f.total} available</b></div><div class="tear-tabs-row">${tabElements}</div></div>`
+   +(f.notes?`<div class="lead-note-box">${esc(f.notes)}</div>`:'')
+   +linkedHtml
+   +`<div class="flyer-actions">`
+   +`<button class="btn sm p" type="button" data-frestock="${esc(f.id)}">🔄 Restock (${f.total})</button>`
+   +`<button class="btn sm" type="button" data-fpull="${esc(f.id)}" ${f.rem<=0?'disabled':''}>&minus; 1 Tab Pulled</button>`
+   +`<button class="btn sm" type="button" data-fcall="${esc(f.id)}">+ 1 Call (${f.calls||0})</button>`
+   +`<button class="chip" type="button" data-fdel="${esc(f.id)}" style="min-height:36px;padding:4px 9px;font-size:12px;margin-left:auto">Delete</button>`
+   +`</div>`
+   +`</div>`;
+ }).join('');
+}
+
 function renderLeads(){
  const allLeads=leadList(),q=leadQuery.toLowerCase();
  const counts={new:0,contacted:0,booked:0,closed:0};
  allLeads.forEach(l=>{counts[l.st]=(counts[l.st]||0)+1});
+
+ const badgePipe=$('#badgePipeCount');if(badgePipe)badgePipe.textContent=allLeads.length;
+ const badgeFlyers=$('#badgeFlyersCount');
+ if(badgeFlyers){
+  badgeFlyers.textContent=(M.flyers||[]).length;
+  const restock=(M.flyers||[]).filter(f=>f.rem<=2).length;
+  badgeFlyers.className='pill '+(restock?'a':'t');
+ }
+
  const stBar=$('#leadStages');
- if(stBar)stBar.innerHTML=LST.map(g=>'<button type="button" class="stage-tile" data-lstf="'+g[0]+'" aria-pressed="'+(leadFilter===g[0])+'"><b>'+counts[g[0]]+'</b><span>'+g[2]+(g[0]==='booked'?'s':'')+'</span></button>').join('');
+ if(stBar)stBar.innerHTML=LST.map(g=>`<button type="button" class="stage-tile" data-lstf="${g[0]}" aria-pressed="${leadFilter===g[0]}"><b>${counts[g[0]]}</b><span>${g[2]}${g[0]==='booked'?'s':''}</span></button>`).join('');
  const allBtn=$('#leadAllBtn');
  if(allBtn)allBtn.setAttribute('aria-pressed',leadFilter==='all'?'true':'false');
 
- const filtered=allLeads.filter(l=>!q||(l.n+' '+(l.d||'')+' '+(l.w||'')+' '+(l.s||'')+' '+(l.x||'')).toLowerCase().includes(q));
- const stagesToShow=leadFilter==='all'?LST:LST.filter(g=>g[0]===leadFilter);
- const COL_CAP=2;
+ const filtered=allLeads.filter(l=>!q||(l.n+' '+(l.d||'')+' '+(l.w||'')+' '+(l.s||'')+' '+(l.x||'')+' '+(l.spot||'')).toLowerCase().includes(q));
 
  const renderCard=l=>{
   const isEditing=editingLeadNote===l.id;
   const noteTxt=(l.x||'').trim();
   const noteArea=isEditing
-   ?'<div><textarea class="lnote" data-lnote="'+esc(l.id)+'" rows="2" placeholder="Add a note..." aria-label="Notes for '+esc(l.n)+'">'+esc(l.x)+'</textarea><div class="row" style="justify-content:flex-end;margin-bottom:6px"><button type="button" class="btn sm" data-lnoteclose="'+esc(l.id)+'" style="min-height:30px;padding:3px 9px;font-size:12px">Done</button></div></div>'
-   :'<button type="button" class="lead-note-btn'+(noteTxt?'':' empty')+'" data-lnoteopen="'+esc(l.id)+'" title="Tap to edit note"><span>'+(noteTxt?esc(noteTxt):'Add a note...')+'</span><em>Edit</em></button>';
-  return '<div class="job lead"><div class="top" style="flex-wrap:nowrap;align-items:center"><div class="row" style="gap:6px;flex-wrap:nowrap;min-width:0;overflow:hidden"><span class="co" style="white-space:nowrap">'+esc(l.n)+'</span>'+(l.d?'<span class="pill" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(l.d)+'</span>':'')+'</div><div class="row" style="gap:4px;flex-wrap:nowrap;flex-shrink:0">'+(l.live&&l.at&&(Date.now()-Date.parse(l.at))<864e5?'<span class="pill g">just in</span>':'')+(l.s?'<span class="pill t">'+esc(l.s)+(l.date?' '+esc(String(l.date).slice(5)):'')+'</span>':'')+(l.mine?'<button type="button" class="chip" data-ldel="'+esc(l.id)+'" style="min-height:24px;padding:2px 7px;font-size:11px">Delete</button>':'')+'</div></div>'+(l.w?'<div class="lead-meta">'+esc(l.w)+'</div>':'')+noteArea+'<div class="stage-seg" role="group" aria-label="Stage for '+esc(l.n)+'">'+LST.map(s=>'<button type="button" data-lead="'+esc(l.id)+'" data-st="'+s[0]+'" aria-pressed="'+(l.st===s[0])+'">'+s[2]+'</button>').join('')+'</div></div>';
+   ?`<div><textarea class="lnote" data-lnote="${esc(l.id)}" rows="2" placeholder="Add a note..." aria-label="Notes for ${esc(l.n)}">${esc(l.x)}</textarea><div class="row" style="justify-content:flex-end;margin-bottom:6px"><button type="button" class="btn sm" data-lnoteclose="${esc(l.id)}" style="min-height:30px;padding:3px 9px;font-size:12px">Done</button></div></div>`
+   :`<div class="lead-note-box${noteTxt?'':' empty'}"><button type="button" class="lead-note-edit-btn" data-lnoteopen="${esc(l.id)}">Edit</button>${noteTxt?esc(noteTxt):'Add a note...'}</div>`;
+
+  const isFlyer=(l.s||'').toLowerCase().includes('flyer');
+  const sourcePill=isFlyer
+   ?`<button type="button" class="pill a lead-source-btn" data-gotoflyer="${esc(l.spot||'')}" title="View in Flyer Tracker">📑 Flyer${l.spot?' &middot; '+esc(l.spot):''}</button>`
+   :(l.s?`<span class="pill t">${esc(l.s)}${l.date?' '+esc(String(l.date).slice(5)):''}</span>`:'');
+
+  return `<div class="lead-card" id="leadcard_${esc(l.id)}">`
+   +`<div class="lead-top">`
+   +`<div class="lead-title"><span class="lead-name">${esc(l.n)}</span>${l.d?`<span class="pill">${esc(l.d)}</span>`:''}</div>`
+   +`<div class="row" style="gap:4px;flex-wrap:nowrap;flex-shrink:0">${l.live&&l.at&&(Date.now()-Date.parse(l.at))<864e5?'<span class="pill g">just in</span>':''}${sourcePill}${l.mine?`<button type="button" class="chip" data-ldel="${esc(l.id)}" style="min-height:24px;padding:2px 7px;font-size:11px">Delete</button>`:''}</div>`
+   +`</div>`
+   +(l.w?`<div class="lead-meta">📍 ${esc(l.w)}</div>`:'')
+   +noteArea
+   +`<div class="stage-seg" role="group" aria-label="Stage for ${esc(l.n)}">${LST.map(s=>`<button type="button" data-lead="${esc(l.id)}" data-st="${s[0]}" aria-pressed="${l.st===s[0]}">${s[2]}</button>`).join('')}</div>`
+   +`</div>`;
  };
 
- $('#leads').innerHTML='<div class="lead-board'+(leadFilter==='all'?' all-cols':'')+'">'+stagesToShow.map(g=>{
-  const G=filtered.filter(l=>l.st===g[0]);
-  const cap=(leadFilter==='all'&&!q&&!expandedCols[g[0]])?COL_CAP:G.length;
-  const shown=G.slice(0,cap),hiddenCount=G.length-shown.length;
-  const pillCls=g[0]==='new'&&G.length?'t':g[0]==='booked'&&G.length?'g':'';
-  return '<div class="lead-col"><div class="lead-col-hdr"><h3>'+g[1]+'</h3><span class="pill '+pillCls+'">'+G.length+'</span></div>'
-   +(shown.length?shown.map(renderCard).join(''):'<div class="lead-empty">No leads in this stage.</div>')
-   +(hiddenCount>0?'<button type="button" class="col-more" data-colexp="'+g[0]+'">Show '+hiddenCount+' more in '+esc(g[1].toLowerCase())+' &darr;</button>':'')
-   +(leadFilter==='all'&&expandedCols[g[0]]&&G.length>COL_CAP?'<button type="button" class="col-more" data-colcol="'+g[0]+'">Show fewer &uarr;</button>':'')
-   +'</div>';
- }).join('')+'</div>';
+ const container=$('#leads');
+ if(!container)return;
+ if(!filtered.length){
+  container.innerHTML='<div class="lead-empty">'+(q?'No leads match your search.':'No leads in this stage.')+'</div>';
+  return;
+ }
+
+ if(leadFilter==='all'){
+  container.innerHTML=LST.map(g=>{
+   const G=filtered.filter(l=>l.st===g[0]);
+   if(!G.length)return '';
+   const pillCls=g[0]==='new'?'t':g[0]==='booked'?'g':g[0]==='contacted'?'a':'';
+   if(g[0]==='closed'&&!q){
+    return `<details class="lowfold" style="margin-top:14px"><summary>Closed / Archived &middot; ${G.length}</summary><div class="body" style="padding:4px 0 0">${G.map(renderCard).join('')}</div></details>`;
+   }
+   return `<div class="lead-group">`
+    +`<div class="lead-group-hdr"><h3><span>${g[1]}</span></h3><span class="pill ${pillCls}">${G.length}</span></div>`
+    +G.map(renderCard).join('')
+    +`</div>`;
+  }).join('');
+ }else{
+  const G=filtered.filter(l=>l.st===leadFilter);
+  container.innerHTML=G.length?G.map(renderCard).join(''):'<div class="lead-empty">No leads in this stage.</div>';
+ }
+
  updateWheelBadges();
 }
+
 function copyEl(el,btn,label){const txt=el.textContent;
  const fb=()=>{const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent='Selected, press copy'};
  try{navigator.clipboard.writeText(txt).then(()=>{btn.textContent='Copied';setTimeout(()=>btn.textContent=label,1600)},fb)}catch(x){fb()}}
-function mine(){renderTodos();renderNotes('claude');renderNotes('gemini');renderNotes('boardy');renderLeads();updateEmailHint()}
+function mine(){renderTodos();renderNotes('claude');renderNotes('gemini');renderNotes('boardy');renderLeads();renderFlyers();updateEmailHint()}
 $('#todoForm').addEventListener('submit',e=>{e.preventDefault();const v=$('#todoIn').value.trim();if(!v)return;$('#todoIn').value='';addTodo(v)});
 document.querySelectorAll('form[data-ai]').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();const ta=f.querySelector('textarea'),v=ta.value.trim();if(!v)return;const ai=f.dataset.ai;(M.notes[ai]=M.notes[ai]||[]).push({id:uid(),t:v,ts:Date.now()});ta.value='';saveM();renderNotes(ai)}));
+
 const leadAddWrap=$('#leadAddWrap'),leadAddToggle=$('#leadAddToggle'),leadAddCancel=$('#leadAddCancel'),leadQEl=$('#leadQ'),leadAllBtn=$('#leadAllBtn');
 function toggleLeadAdd(open){
  const show=open!==undefined?open:leadAddWrap.hidden;
@@ -660,15 +883,48 @@ if(leadAddCancel)leadAddCancel.addEventListener('click',()=>toggleLeadAdd(false)
 if(leadAllBtn)leadAllBtn.addEventListener('click',()=>{leadFilter='all';renderLeads()});
 if(leadQEl)leadQEl.addEventListener('input',e=>{leadQuery=e.target.value;renderLeads()});
 $('#leadForm').addEventListener('submit',e=>{e.preventDefault();const f=e.target,g=k=>f.elements[k].value.trim();if(!g('n'))return;M.myLeads.push({id:'m_'+uid(),n:g('n'),d:g('d'),w:g('w'),s:g('s'),x:g('x'),mine:1});f.reset();toggleLeadAdd(false);saveM();renderLeads();renderToday()});
+
+/* Flyer form & filter controls */
+const flyerAddWrap=$('#flyerAddWrap'),flyerAddToggle=$('#flyerAddToggle'),flyerAddCancel=$('#flyerAddCancel'),flyerQEl=$('#flyerQ');
+function toggleFlyerAdd(open){
+ if(!flyerAddWrap)return;
+ const show=open!==undefined?open:flyerAddWrap.hidden;
+ flyerAddWrap.hidden=!show;
+ if(flyerAddToggle)flyerAddToggle.setAttribute('aria-expanded',show?'true':'false');
+ if(show){const first=flyerAddWrap.querySelector('input[name="n"]');if(first)first.focus()}
+}
+if(flyerAddToggle)flyerAddToggle.addEventListener('click',()=>toggleFlyerAdd());
+if(flyerAddCancel)flyerAddCancel.addEventListener('click',()=>toggleFlyerAdd(false));
+if(flyerQEl)flyerQEl.addEventListener('input',e=>{flyerQuery=e.target.value;renderFlyers()});
+const flyerForm=$('#flyerForm');
+if(flyerForm)flyerForm.addEventListener('submit',e=>{
+ e.preventDefault();
+ const f=e.target,g=k=>f.elements[k].value.trim();
+ if(!g('n'))return;
+ const tot=Math.max(1,parseInt(g('total'),10)||10);
+ M.flyers.unshift({id:'f_'+uid(),n:g('n'),loc:g('loc'),date:g('date')||TODAY,total:tot,rem:tot,calls:0,notes:g('notes')});
+ f.reset();toggleFlyerAdd(false);saveM();renderFlyers();renderToday();
+});
+
 document.addEventListener('input',e=>{const t=e.target;
  if(t.dataset&&t.dataset.lnote){const o=M.leads[t.dataset.lnote]=M.leads[t.dataset.lnote]||{};o.x=t.value;saveM()}
  if(t.id==='setEmail'){M.set.email=t.value.trim();saveM();updateEmailHint();renderNotes('claude');renderNotes('gemini');renderNotes('boardy')}});
 document.addEventListener('change',e=>{const t=e.target;
  if(t.dataset&&t.dataset.lnote){const o=M.leads[t.dataset.lnote]=M.leads[t.dataset.lnote]||{};o.x=t.value;saveM()}
  if(t.id==='setEmail'){M.set.email=t.value.trim();saveM();mine()}});
+
 document.addEventListener('click',e=>{
- const b=e.target.closest('button');if(!b)return;const d=b.dataset;
- if(d.ttconnect){b.textContent='Opening TickTick...';api('/tt/login').then(j=>{location.href=j.url}).catch(x=>{b.textContent='Connect TickTick';alert(x.message)})}
+ const b=e.target.closest('button, [data-gotoflyer], [data-gotolead]');if(!b)return;const d=b.dataset;
+ if(d.ttab){setTutorTab(d.ttab)}
+ else if(d.gotoflyer!==undefined){setTutorTab('flyers');if(d.gotoflyer){flyerQuery=d.gotoflyer;const fq=$('#flyerQ');if(fq)fq.value=d.gotoflyer;renderFlyers()}}
+ else if(d.gotolead){setTutorTab('pipeline');leadFilter='all';renderLeads();const el=document.getElementById('leadcard_'+d.gotolead);if(el)el.scrollIntoView({behavior:'smooth',block:'center'})}
+ else if(d.frestockall){(M.flyers||[]).forEach(f=>{if(f.rem<=2){f.rem=f.total;f.date=TODAY}});saveM();renderFlyers();renderToday()}
+ else if(d.frestock){const f=(M.flyers||[]).find(x=>x.id===d.frestock);if(f){f.rem=f.total;f.date=TODAY;saveM();renderFlyers();renderToday()}}
+ else if(d.fpull){const f=(M.flyers||[]).find(x=>x.id===d.fpull);if(f&&f.rem>0){f.rem--;saveM();renderFlyers();renderToday()}}
+ else if(d.fcall){const f=(M.flyers||[]).find(x=>x.id===d.fcall);if(f){f.calls=(f.calls||0)+1;saveM();renderFlyers()}}
+ else if(d.fdel){M.flyers=(M.flyers||[]).filter(x=>x.id!==d.fdel);saveM();renderFlyers();renderToday()}
+ else if(d.ff){flyerFilter=d.ff;renderFlyers()}
+ else if(d.ttconnect){b.textContent='Opening TickTick...';api('/tt/login').then(j=>{location.href=j.url}).catch(x=>{b.textContent='Connect TickTick';alert(x.message)})}
  else if(d.ttreload){TT.state='loading';renderTodos();loadTT()}
  else if(d.ttdone){const t=TT.tasks.find(x=>x.id===d.ttdone);if(!t||!t.projectId)return;TT.tasks=TT.tasks.filter(x=>x!==t);renderTodos();
   api('/tasks/complete',{id:t.id,projectId:t.projectId}).catch(x=>{TT.tasks.unshift(t);renderTodos();alert('Could not complete it in TickTick: '+x.message)})}
@@ -679,8 +935,6 @@ document.addEventListener('click',e=>{
  else if(d.ncopy){copyEl(document.getElementById('n_'+d.ncopy),b,'Copy')}
  else if(d.ndone||d.ndel){const k=(d.ndone||d.ndel).split(':'),L=M.notes[k[0]]||[];if(d.ndel)M.notes[k[0]]=L.filter(x=>x.id!==k[1]);else{const n=L.find(x=>x.id===k[1]);if(n)n.done=!n.done}saveM();renderNotes(k[0])}
  else if(d.lstf){leadFilter=leadFilter===d.lstf?'all':d.lstf;renderLeads()}
- else if(d.colexp){expandedCols[d.colexp]=true;renderLeads()}
- else if(d.colcol){delete expandedCols[d.colcol];renderLeads()}
  else if(d.lnoteopen){editingLeadNote=d.lnoteopen;renderLeads();const ta=document.querySelector('textarea[data-lnote="'+CSS.escape(d.lnoteopen)+'"]');if(ta)ta.focus()}
  else if(d.lnoteclose){editingLeadNote=null;renderLeads()}
  else if(d.lead){const o=M.leads[d.lead]=M.leads[d.lead]||{};o.st=d.st;saveM();renderLeads();renderToday()}
@@ -737,7 +991,7 @@ const TAB_META={
  today:{title:'Today',sub:()=>{const s=liveStats();return s.openAttn?s.openAttn+' need attention':'All caught up'}},
  jobs:{title:'Jobs',sub:()=>{const s=liveStats();return s.openJobs+' to apply'}},
  messages:{title:'Messages',sub:()=>{const s=liveStats();return s.openMsgs+' ready to send'}},
- tutoring:{title:'Tutoring',sub:()=>{const s=liveStats();return s.newLeads+' new leads'}},
+ tutoring:{title:'Tutoring',sub:()=>{const s=liveStats();return s.newLeads+' new leads'+(s.flyerRestocks?' · '+s.flyerRestocks+' restock':'')}},
  updates:{title:'Updates',sub:()=>((P.upd||[]).length+' reports')}
 };
 let tabOrder=DEFAULT_TABS.slice();

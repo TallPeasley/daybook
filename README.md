@@ -15,7 +15,7 @@ I built it for my own co-op search and tutoring side business. This repo is a **
 - **Today:** key numbers (each tile jumps to its tab), an "At a glance" summary, to-dos synced with TickTick, "Needs your attention" items with Done ticks, top roles, upcoming dates and overdue items.
 - **Jobs:** open roles grouped into *almost done or closing soon*, *new in the last 2 days*, and *everything else by match score*, with lower matches folded away. Search, filter, Apply link, and Applied / Skip buttons.
 - **Messages:** LinkedIn messages drafted overnight. Copy, open the profile, send by hand, mark sent. Nothing is ever sent automatically.
-- **Tutoring:** leads moved between New, Contacted, Students and Closed, with notes. New leads arrive live from Gemini.
+- **Tutoring:** pipeline for leads and active students (New, Contacted, Students, Closed) plus an interactive Flyer Tracker to monitor physical drop locations, tear-off tabs, restock alerts and incoming calls.
 - **Updates:** notes for my AI assistants (sent by email or the share sheet) and each automation's daily report.
 - **Home-screen widget:** a Scriptable widget shows roles, to-dos, messages, leads and what's due next.
 
