@@ -148,9 +148,14 @@ details.isdone{opacity:.6}details.isdone summary{text-decoration:line-through;fo
 details.lowfold>.body{padding:0 8px 4px}details.lowfold .job{border-color:var(--line)}
 .job .row .pill{margin-top:2px}
 /* Demo & Header buttons */
+.login-btn{font:inherit;font-size:13px;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid var(--teal);background:var(--teal);color:#fff!important;min-height:36px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;text-decoration:none;transition:transform .12s ease,opacity .12s ease}
+.login-btn:hover{opacity:.92;transform:scale(1.02)}
+.demo-banner{background:var(--amber-soft);border:1px solid var(--amber);border-radius:12px;padding:10px 14px;margin:0 0 14px;font-size:13.5px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.demo-banner strong{color:var(--amber)}
 .about-btn,.theme-btn{font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:99px;border:1px solid var(--teal);background:var(--teal-soft);color:var(--teal);min-height:36px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
 .theme-btn{border-color:var(--line);background:var(--surface);color:var(--ink);padding:7px 10px}
-.demo-tag{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);background:var(--amber-soft);border-radius:99px;padding:1px 7px;margin-left:8px;vertical-align:middle}
+.demo-tag{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);background:var(--amber-soft);border-radius:99px;padding:2px 8px;margin-left:8px;vertical-align:middle;text-decoration:none;font-weight:600}
+.demo-tag:hover{background:var(--amber);color:#fff}
 .demo-try{background:var(--amber-soft);border:1px dashed var(--amber);border-radius:12px;padding:9px 12px;margin:0 0 10px;font-size:13.5px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 
 /* Rotating Circle Bottom Navigation:
@@ -239,7 +244,12 @@ dialog#about::backdrop{background:rgba(5,12,11,.55)}
 </style>
 </head><body>
 <div class="wrap">
-<header><div class="hdr-row"><h1>Daybook<span class="demo-tag">demo</span></h1><div class="hdr-actions"><button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle color theme" title="Toggle light/dark mode">Theme</button><button class="about-btn" id="aboutBtn" type="button" aria-haspopup="dialog">About</button></div></div><div class="date" id="date"></div><div id="fresh" class="fresh"></div></header>
+<header><div class="hdr-row"><h1>Daybook<a href="https://aero-daybook.web.app/" class="demo-tag" title="Viewing demo data. Tap to log in to your account.">demo &bull; log in &rarr;</a></h1><div class="hdr-actions"><a class="login-btn" id="loginBtn" href="https://aero-daybook.web.app/" title="Log in to your private Daybook">Log In &rarr;</a><button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle color theme" title="Toggle light/dark mode">Theme</button><button class="about-btn" id="aboutBtn" type="button" aria-haspopup="dialog">About</button></div></div><div class="date" id="date"></div><div id="fresh" class="fresh"></div></header>
+
+<div class="demo-banner" id="demoBanner">
+  <div><strong>Demo Mode:</strong> Viewing sample data in this browser.</div>
+  <a class="login-btn" style="padding:6px 14px;font-size:12.5px" href="https://aero-daybook.web.app/">Log In to Your Account &rarr;</a>
+</div>
 
 <section class="view" id="v-today">
   <div class="grid" id="kpis"></div>
@@ -353,8 +363,12 @@ dialog#about::backdrop{background:rgba(5,12,11,.55)}
 </div>
 
 <dialog id="about" aria-labelledby="abTitle">
-<div class="ab-top"><b id="abTitle">About Daybook</b><button class="btn sm p" type="button" data-abclose="1">Explore the demo</button></div>
+<div class="ab-top"><b id="abTitle">About Daybook</b><div style="display:flex;gap:6px;align-items:center"><a class="btn sm p" href="https://aero-daybook.web.app/" style="text-decoration:none;font-weight:700">Log In &rarr;</a><button class="btn sm" type="button" data-abclose="1">Explore demo</button></div></div>
 <div class="ab">
+  <div style="background:var(--teal-soft);border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:8px 0 14px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+    <div><b>Looking for your live Daybook?</b><div style="font-size:13px;color:var(--muted)">Sign in with your Google account to access your live tasks, tutoring pipeline, and messages.</div></div>
+    <a class="btn sm p" href="https://aero-daybook.web.app/" style="text-decoration:none;white-space:nowrap;font-weight:700">Log In</a>
+  </div>
   <p class="lede">Daybook is the phone app I built to run my day. Each morning an AI-written brief turns my notes into a short list I can tick off with a thumb: jobs to apply to, LinkedIn messages to send, tutoring leads and to-dos.</p>
   <p class="note">This is a working copy of the real app with <b>made-up sample data</b>. Every company, person and lead is fictional. Your taps are saved in this browser only.</p>
 
