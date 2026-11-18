@@ -251,7 +251,7 @@ dialog#about::backdrop{background:rgba(5,12,11,.55)}
   <a class="login-btn" style="padding:6px 14px;font-size:12.5px" href="https://aero-daybook.web.app/">Log In to Your Account &rarr;</a>
 </div>
 
-<section class="view" id="v-today">
+<section class="view on" id="v-today">
   <div class="grid" id="kpis"></div>
   <div class="glance"><h3>At a glance</h3><ul id="glance"></ul></div>
   <h2 id="todoh">To-do</h2>
@@ -1293,7 +1293,15 @@ AB.addEventListener('close',()=>{try{localStorage.setItem('daybook_demo_seen','1
  DATA.jobs.forEach(j=>{j.a=day(j.a)});P.leads.forEach(l=>{l.date=day(l.date)});
  P.date=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+' · Winter / Summer '+(y+1);
  P.dataDate=P.textDate=day(0);P.builtAt=built.toISOString();P.updated='Sample data, rebuilt each time the demo opens'})();
-renderToday();renderUpd();all();mine();route();loadTT();loadData();loadState();loadLeads();
+route();
+try { renderToday(); } catch(e){ console.error(e); }
+try { renderUpd(); } catch(e){ console.error(e); }
+try { all(); } catch(e){ console.error(e); }
+try { mine(); } catch(e){ console.error(e); }
+try { loadTT(); } catch(e){ console.error(e); }
+try { loadData(); } catch(e){ console.error(e); }
+try { loadState(); } catch(e){ console.error(e); }
+try { loadLeads(); } catch(e){ console.error(e); }
 let seen=/[?&]about=0/.test(location.search);try{seen=seen||!!localStorage.getItem('daybook_demo_seen')}catch(e){}if(!seen)openAbout();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible')return;if(TT.state==='on')loadTT();loadData();loadState();loadLeads()});
 ;
