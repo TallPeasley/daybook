@@ -1,6 +1,9 @@
 {
   "hosting": {
+    "site": "aero-daybook",
     "public": "site",
+    "cleanUrls": true,
+    "trailingSlash": false,
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -8,8 +11,19 @@
     ],
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/api/**",
+        "function": {
+          "functionId": "daybook",
+          "region": "northamerica-northeast1"
+        }
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.html",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache" }
+        ]
       }
     ]
   }

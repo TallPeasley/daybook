@@ -1,1287 +1,456 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Daybook (demo)</title><meta name="description" content="Daybook: a phone web app that turns an AI-written morning brief into a tappable day planner. Demo with sample data."><meta name="theme-color" content="#1f3a37">
-<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Daybook"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png">
-<style>html{color-scheme:light;height:100%}body{margin:0;min-height:100%;font-size:14px}[hidden]{display:none!important}</style>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<!doctype html>
+<html lang="en" data-aero-brand="chirp" data-aero-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chirp by Aero — Fast Daily Tasks &amp; Daybook</title>
+<meta name="description" content="Keyboard-first daily task capture, morning brief, job &amp; tutoring pipeline, and one-click BirdBrains drill import — built on the Aero system.">
+<link rel="canonical" href="https://maalik-daybook.netlify.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Chirp by Aero">
+<meta property="og:title" content="Chirp by Aero — Fast Daily Tasks &amp; Daybook">
+<meta property="og:description" content="Keyboard-first quick capture, rotating dial navigation, and one-click BirdBrains practice drill sync.">
+<meta property="og:url" content="https://maalik-daybook.netlify.app/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0369A1">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="aero/chirp.svg">
+<link rel="stylesheet" href="aero/aero.css">
+<script>if (location.hash && location.hash !== '#' && !location.hash.startsWith('#main')) location.replace('app' + location.hash);</script>
 <style>
-/* Phone web app: sticky header, rotating circle bottom dial you can raise and spin with a thumb. */
-:root{--bg:#eef2f1;--surface:#fff;--ink:#14201e;--muted:#5d6b68;--line:#dde3e1;--teal:#0e6b63;--teal-soft:#e0f0ed;--amber:#b45309;--amber-soft:#fff4de;--red:#b42323;--red-soft:#fdeceb;--green:#17803d;--green-soft:#e5f5ea;--bar:#ffffff;--bar-glass:rgba(255,255,255,.92);--shadow:0 12px 34px rgba(14,32,30,.16);
---display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--mono:'IBM Plex Mono',Consolas,Menlo,monospace;--body:system-ui,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
---safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);--safe-left:env(safe-area-inset-left,0px);--safe-right:env(safe-area-inset-right,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1514;--surface:#15211f;--ink:#e6efed;--muted:#93a5a1;--line:#263634;--teal:#4fc0b3;--teal-soft:#12302d;--amber:#f0a44a;--amber-soft:#33250f;--red:#ff8b84;--red-soft:#391a19;--green:#5fd18a;--green-soft:#13301f;--bar:#101a19;--bar-glass:rgba(16,26,25,.92);--shadow:0 14px 38px rgba(0,0,0,.55);color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0d1514;--surface:#15211f;--ink:#e6efed;--muted:#93a5a1;--line:#263634;--teal:#4fc0b3;--teal-soft:#12302d;--amber:#f0a44a;--amber-soft:#33250f;--red:#ff8b84;--red-soft:#391a19;--green:#5fd18a;--green-soft:#13301f;--bar:#101a19;--bar-glass:rgba(16,26,25,.92);--shadow:0 14px 38px rgba(0,0,0,.55);color-scheme:dark}
-*{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:max(16px,var(--safe-left)) max(16px,var(--safe-right));padding-top:var(--safe-top);padding-bottom:calc(112px + var(--safe-bottom));-webkit-tap-highlight-color:transparent;overscroll-behavior-y:none}
-body::before{content:"";position:fixed;inset:0 0 auto;height:var(--safe-top);background:var(--bg);z-index:10;pointer-events:none}
-.wrap{max-width:640px;margin:0 auto}
-header{position:sticky;top:var(--safe-top);background:var(--bg);padding:14px 0 10px;z-index:5;border-bottom:1px solid transparent;transition:border-color .15s}
-.hdr-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.hdr-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
-h1{font-family:var(--display);font-weight:800;font-size:30px;line-height:1;letter-spacing:-.02em;margin:0}
-.date{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:6px}
-h2{font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:22px 0 8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-.view{display:none}.view.on{display:block}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-@media(max-width:359px){.grid{grid-template-columns:repeat(2,1fr)}}
-.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 10px 9px;min-width:0;transition:transform .12s,border-color .15s,background .15s}
-.kpi b{display:block;font-family:var(--display);font-size:28px;line-height:1.05}
-.kpi span{display:block;font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.3}
-.kpi.hot b{color:var(--amber)}.kpi.good b{color:var(--green)}
-.glance{background:var(--teal-soft);border:1px solid var(--teal);border-radius:12px;padding:12px 16px;margin-top:12px}
-.glance h3{font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin:0 0 4px}
-.glance ul{margin:0;padding-left:18px}.glance li{margin:4px 0}
-details{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}
-details.warn{border-color:var(--red);border-left-width:4px}details.gold{border-color:var(--amber);border-left-width:4px}
-summary{padding:12px 14px;font-weight:600;cursor:pointer;min-height:44px;list-style:none}
-summary::-webkit-details-marker{display:none}
-summary::after{content:"+";float:right;color:var(--muted);font-family:var(--mono);margin-left:8px}
-details[open] summary::after{content:"\2212"}
-.body{padding:0 14px 12px;color:var(--muted);font-size:14px}.body p{margin:4px 0 8px}
-a{color:var(--teal)}
-.pill{font-family:var(--mono);font-size:11.5px;padding:2px 8px;border-radius:99px;background:var(--line);color:var(--muted);white-space:nowrap;display:inline-block;font-weight:500;letter-spacing:0;text-transform:none}
-.pill.g{background:var(--green-soft);color:var(--green)}.pill.t{background:var(--teal-soft);color:var(--teal)}.pill.a{background:var(--amber-soft);color:var(--amber)}.pill.r{background:var(--red-soft);color:var(--red)}
-.tools{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
-/* Use 16px font on inputs/textareas so iOS Safari never auto-zooms the viewport and displaces fixed bottom elements */
-input[type=search],input[type=text],input[type=email],textarea{font:inherit;font-size:16px;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
-input[type=search]{flex:1 1 180px;min-width:0}
-input[type=text],input[type=email],textarea{width:100%}
-.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
-.chip{flex:none;font:inherit;font-size:13px;font-weight:500;padding:8px 13px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--ink);min-height:40px;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
-.chip[aria-pressed=true]{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:600}
-.job{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;transition:opacity .15s}
-.job.done{opacity:.6}.job.skip{opacity:.48}
-.job .top{display:flex;gap:8px;align-items:baseline;justify-content:space-between}
-.job .co{font-weight:700;overflow-wrap:anywhere}.job .t{color:var(--muted);font-size:14px;margin:2px 0 8px;overflow-wrap:anywhere}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.btn{font:inherit;font-size:14px;font-weight:600;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);min-height:44px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:background .15s,border-color .15s,transform .1s}
-.btn:active{transform:scale(.98)}
-.btn.p{background:var(--teal);border-color:var(--teal);color:#fff}
-.btn[aria-pressed=true]{background:var(--green-soft);border-color:var(--green);color:var(--green)}
-.btn:focus-visible,.chip:focus-visible,summary:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
-.msg{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;transition:opacity .15s}
-.msg.sent{opacity:.58}
-.msg blockquote{margin:8px 0;padding:10px 12px;background:var(--bg);border-radius:8px;font-size:14px;overflow-wrap:anywhere;user-select:all}
-.note{font-size:13px;color:var(--muted)}
-.sync{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin:18px 0 0;text-align:center}
-.empty{padding:22px 10px;text-align:center;color:var(--muted)}
-textarea{resize:vertical;min-height:84px}
-textarea:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
-.add{display:flex;gap:8px;margin-bottom:8px}.add input{flex:1;min-width:0}
-.stack{display:grid;gap:8px;margin-bottom:10px}
-.stack label{font-size:13px;color:var(--muted);display:grid;gap:4px}
-.item{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 10px 8px 8px;margin-bottom:8px}
-.item .txt{flex:1 1 150px;min-width:0;overflow-wrap:anywhere}.item.done .txt{text-decoration:line-through;color:var(--muted)}
-.tick{flex:none;width:40px;height:40px;border-radius:10px;border:2px solid var(--teal);background:transparent;color:var(--teal);font-weight:800;font-size:17px;cursor:pointer}
-.tick[aria-pressed=true]{background:var(--teal);color:#fff}
-.btn.sm{min-height:40px;padding:7px 11px;font-size:13px}
-.lnote{min-height:54px;margin:6px 0 4px;font-size:15px}
-.lead .row{gap:6px}
-/* Tutoring Section: Clean dual-mode tabs (Pipeline & Flyers Tracker), no side-scroll columns */
-.tutor-subnav{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;margin:8px 0 12px}
-.tutor-tab-btn{flex:1;font:inherit;font-size:13.5px;font-weight:600;padding:8px 12px;border:0;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background .15s,color .15s}
-.tutor-tab-btn[aria-selected="true"]{background:var(--teal);color:#fff;box-shadow:0 2px 8px rgba(14,107,99,.2)}
-.tutor-tab-btn[aria-selected="true"] .pill{background:rgba(255,255,255,.25);color:#fff}
-.tutor-pane{display:none}
-.tutor-pane.on{display:block}
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--aero-canvas);
+    color: var(--aero-ink);
+    font-family: var(--aero-font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  .wrap { max-width: var(--aero-max); margin: 0 auto; padding: 0 24px; }
+  @media (max-width: 640px) { .wrap { padding: 0 16px; } }
 
-/* Stage bar */
-.stage-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0 10px}
-.stage-tile{font:inherit;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:8px 6px 7px;text-align:center;cursor:pointer;transition:background .15s,border-color .15s,transform .1s;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
-.stage-tile:active{transform:scale(.97)}
-.stage-tile b{font-family:var(--display);font-size:21px;line-height:1.05;color:var(--ink)}
-.stage-tile span{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.02em}
-.stage-tile[aria-pressed="true"]{background:var(--teal-soft);border-color:var(--teal)}
-.stage-tile[aria-pressed="true"] b,.stage-tile[aria-pressed="true"] span{color:var(--teal);font-weight:600}
-.tutor-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 10px}
-.tutor-bar input[type=search]{flex:1 1 160px;padding:9px 11px;min-height:40px}
+  .hero {
+    padding: 56px 0 64px;
+    border-bottom: 1px solid var(--aero-line);
+    background-color: var(--aero-canvas);
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--aero-line) 65%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--aero-line) 65%, transparent) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .hero-grid { display: grid; gap: 36px; align-items: start; }
+  @media (min-width: 960px) {
+    .hero-grid { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 48px; }
+  }
+  .hero-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .hero h1 {
+    margin: 20px 0 0;
+    font-family: var(--aero-font-display);
+    font-size: clamp(36px, 5vw, 54px);
+    font-weight: 800;
+    letter-spacing: var(--aero-tracking-display);
+    line-height: 1.04;
+  }
+  .hero h1 .aero-serif { color: var(--aero-accent); }
+  .hero-lede { margin: 18px 0 0; max-width: 560px; font-size: 18px; color: var(--aero-ink-2); }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
 
-/* Lead Cards & Groups in Pipeline (Fluid vertical layout, no horizontal side-scroll) */
-.lead-group{margin-bottom:14px}
-.lead-group-hdr{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 6px;margin:12px 0 6px;border-bottom:1px solid var(--line)}
-.lead-group-hdr h3{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0;display:flex;align-items:center;gap:6px}
-.lead-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;transition:border-color .15s,box-shadow .15s}
-.lead-card .lead-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:nowrap}
-.lead-card .lead-title{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden}
-.lead-card .lead-name{font-family:var(--display);font-size:17px;font-weight:700;color:var(--ink);white-space:nowrap}
-.lead-card .lead-meta{font-size:13px;color:var(--muted);margin:4px 0 6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.lead-card .lead-source{cursor:pointer;transition:transform .1s}
-.lead-card .lead-source:active{transform:scale(.95)}
-.lead-note-box{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;margin:6px 0 8px;font-size:13px;color:var(--ink);line-height:1.4}
-.lead-note-box.empty{color:var(--muted);font-style:italic}
-.lead-note-edit-btn{font:inherit;font-family:var(--mono);font-size:10.5px;color:var(--teal);background:none;border:0;cursor:pointer;padding:0;float:right;margin-left:6px;font-style:normal}
-.stage-seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:3px;margin-top:6px}
-.stage-seg button{font:inherit;font-size:11.5px;font-weight:500;padding:6px 2px;border:0;border-radius:7px;background:transparent;color:var(--muted);min-height:30px;cursor:pointer;transition:background .15s,color .15s}
-.stage-seg button[aria-pressed="true"]{background:var(--teal);color:#fff;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.1)}
-.lead-empty{padding:22px 10px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:13px;text-align:center}
+  .hero-right { display: grid; gap: 12px; }
+  .plate-row { display: grid; grid-template-columns: 152px minmax(0, 1fr); gap: 12px; align-items: stretch; }
+  @media (max-width: 520px) {
+    .plate-row { grid-template-columns: 1fr; }
+    .plate-row .aero-plate { max-width: 160px; }
+  }
+  .spec-cells { margin: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .spec-cell { display: flex; flex-direction: column; justify-content: space-between; gap: 12px; padding: 14px 16px; }
+  .spec-cell dd {
+    margin: 0;
+    font-family: var(--aero-font-mono);
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .spec-cell dt { font-size: 12px; line-height: 1.35; color: var(--aero-ink-3); }
 
-/* Flyers Tracker UI */
-.flyer-hero{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:4px 0 12px}
-@media(max-width:440px){.flyer-hero{grid-template-columns:repeat(2,1fr)}}
-.f-stat{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:9px 10px 8px;text-align:center}
-.f-stat b{display:block;font-family:var(--display);font-size:22px;line-height:1;color:var(--ink)}
-.f-stat span{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.02em}
-.f-stat.alert b{color:var(--amber)}
-.f-stat.good b{color:var(--green)}
-.flyer-alert-box{background:var(--amber-soft);border:1px solid var(--amber);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.flyer-alert-box b{color:var(--amber)}
-.flyer-card{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:12px 14px;margin-bottom:10px;position:relative;transition:border-color .15s}
-.flyer-card.low-stock{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber-soft)}
-.flyer-card .flyer-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-.flyer-card .flyer-name{font-family:var(--display);font-size:16.5px;font-weight:700;color:var(--ink);margin:0}
-.flyer-card .flyer-area{font-size:12.5px;color:var(--muted);margin-top:1px}
-.flyer-detail-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:6px 0}
-.tear-strip{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin:8px 0 10px}
-.tear-strip-hdr{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-family:var(--mono);color:var(--muted);margin-bottom:6px}
-.tear-strip-hdr b{color:var(--ink)}
-.tear-tabs-row{display:flex;gap:4px;overflow-x:auto;padding-bottom:3px}
-.tear-tab{flex:1;min-width:14px;max-width:26px;height:24px;border-radius:3px 3px 6px 6px;border:1px solid var(--line);border-top:2px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;font-family:var(--mono);transition:background .15s}
-.tear-tab.active{background:var(--teal);border-color:var(--teal);color:#fff}
-.tear-tab.low{background:var(--amber);border-color:var(--amber);color:#fff}
-.tear-tab.taken{background:transparent;border-style:dashed;color:var(--muted);opacity:.4}
-.flyer-lead-link{background:var(--teal-soft);border:1px dashed var(--teal);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--teal);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer}
-.flyer-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}
-details.tlist .body{padding:0 8px 4px}details.tlist .item{border:0;border-top:1px solid var(--line);border-radius:0;margin:0;padding:8px 2px}
-.fresh{font-family:var(--mono);font-size:11.5px;color:var(--green);margin-top:2px}.fresh.stale{color:var(--red);font-weight:500}
-a.kpi{color:inherit;text-decoration:none;display:block}a.kpi:active{background:var(--teal-soft);transform:scale(.98)}a.kpi:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
-details.isdone{opacity:.6}details.isdone summary{text-decoration:line-through;font-weight:500}
-details.lowfold>.body{padding:0 8px 4px}details.lowfold .job{border-color:var(--line)}
-.job .row .pill{margin-top:2px}
-/* Demo & Header buttons */
-.about-btn,.theme-btn{font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:99px;border:1px solid var(--teal);background:var(--teal-soft);color:var(--teal);min-height:36px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
-.theme-btn{border-color:var(--line);background:var(--surface);color:var(--ink);padding:7px 10px}
-.demo-tag{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);background:var(--amber-soft);border-radius:99px;padding:1px 7px;margin-left:8px;vertical-align:middle}
-.demo-try{background:var(--amber-soft);border:1px dashed var(--amber);border-radius:12px;padding:9px 12px;margin:0 0 10px;font-size:13.5px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .section { padding: 56px 0; border-bottom: 1px solid var(--aero-line); }
+  .section--surface { background: var(--aero-surface); }
+  .sec-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 16px;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--aero-line);
+  }
+  .sec-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0;
+    font-family: var(--aero-font-display);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: var(--aero-tracking-display);
+    line-height: 1.15;
+  }
+  .sec-sub { margin: 0; font-size: 14.5px; color: var(--aero-ink-3); }
 
-/* Rotating Circle Bottom Navigation:
-   - Lowered state sits tucked at the bottom center (only the compact top crown + active tab peek out, never jutting up across the screen).
-   - Raise it (pull up or tap handle/hub) to reveal the full rotating wheel, spin/drag to move tabs to the top active slot, or rearrange tabs! */
-.wheel-backdrop{position:fixed;inset:0;background:rgba(8,18,17,.36);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:18;opacity:0;pointer-events:none;transition:opacity .26s ease}
-.wheel-backdrop.on{opacity:1;pointer-events:auto}
-nav.wheel-nav{--wheel-size:296px;--orbit:104px;--wheel-rot:0;--raise-offset:222px;--drag-y:0px;--drag-rot:0;
-position:fixed;left:50%;bottom:0;width:var(--wheel-size);height:var(--wheel-size);border-radius:50%;z-index:20;
-transform:translate3d(-50%,calc(var(--raise-offset) - var(--safe-bottom)*.5 + var(--drag-y)),0);
-transition:transform .34s cubic-bezier(.22,1,.36,1),opacity .2s ease;
-touch-action:none;user-select:none;-webkit-user-select:none}
-nav.wheel-nav[data-raised="true"]{--raise-offset:calc(-14px - var(--safe-bottom))}
-nav.wheel-nav.dragging{transition:none}
-body.kb-open nav.wheel-nav,body.kb-open .wheel-backdrop{opacity:0;pointer-events:none;transform:translate3d(-50%,275px,0)}
-.wheel-shell{position:relative;width:100%;height:100%;border-radius:50%;background:var(--bar-glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid var(--line);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center}
-nav.wheel-nav[data-raised="true"] .wheel-shell{border-color:var(--teal)}
-/* Subtle inner track ring */
-.wheel-shell::before{content:"";position:absolute;inset:24px;border-radius:50%;border:1px dashed var(--line);pointer-events:none;opacity:.6}
-/* Top 12-o'clock active dock / target indicator ("move tabs to") */
-.wheel-target{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:72px;height:62px;border-radius:18px;border:2px solid var(--teal);background:var(--teal-soft);opacity:.28;pointer-events:none;transition:opacity .2s,transform .2s}
-nav.wheel-nav[data-raised="true"] .wheel-target{opacity:.5}
-nav.wheel-nav[data-arrange="true"] .wheel-target{border-style:dashed;border-color:var(--amber);background:var(--amber-soft);opacity:.75}
-/* Top pull / raise handle pill on the crown */
-.wheel-handle{position:absolute;top:-12px;left:50%;transform:translateX(-50%);height:24px;padding:0 11px;border-radius:99px;border:1px solid var(--line);background:var(--bar);color:var(--muted);font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.04em;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:grab;z-index:5;white-space:nowrap}
-.wheel-handle:active{cursor:grabbing}
-.wheel-handle svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
-nav.wheel-nav[data-raised="true"] .wheel-handle svg{transform:rotate(180deg)}
-/* Rotating ring of tab buttons */
-.wheel-rotor{position:absolute;inset:0;border-radius:50%}
-.wheel-item{position:absolute;top:50%;left:50%;width:66px;height:58px;margin:-29px 0 0 -33px;border-radius:16px;text-decoration:none;color:var(--muted);font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-transform:rotate(calc(var(--angle,0) * 1deg)) translateY(calc(-1 * var(--orbit))) rotate(calc(-1 * var(--angle,0) * 1deg));
-transition:transform .32s cubic-bezier(.22,1,.36,1),background .18s,color .18s,box-shadow .18s,opacity .2s;cursor:pointer;-webkit-touch-callout:none}
-nav.wheel-nav.dragging .wheel-item{transition:background .15s,color .15s}
-.wheel-item svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.wheel-item .w-lbl{line-height:1.1;letter-spacing:-.01em;max-width:62px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wheel-item .w-badge{position:absolute;top:2px;right:4px;font-family:var(--mono);font-size:9.5px;font-weight:600;line-height:1;padding:2px 4.5px;border-radius:99px;background:var(--line);color:var(--ink)}
-.wheel-item[aria-current="page"]{color:var(--teal);background:var(--teal-soft);box-shadow:0 2px 10px rgba(14,107,99,.16)}
-.wheel-item[aria-current="page"] .w-badge{background:var(--teal);color:#fff}
-.wheel-item.slot-preview{color:var(--teal)}
-/* When lowered, non-top items fade softly so only the compact top crown is prominent */
-nav.wheel-nav[data-raised="false"]:not(.dragging) .wheel-item:not([aria-current="page"]){opacity:.25;pointer-events:none}
-/* Arrange / Move tabs mode */
-nav.wheel-nav[data-arrange="true"] .wheel-item{border:1.5px dashed var(--amber);background:var(--surface);color:var(--ink)}
-nav.wheel-nav[data-arrange="true"] .wheel-item.moving-src{background:var(--amber-soft);border-style:solid;border-color:var(--amber);color:var(--amber);transform:rotate(calc(var(--angle,0) * 1deg)) translateY(calc(-1 * var(--orbit))) rotate(calc(-1 * var(--angle,0) * 1deg)) scale(1.08)}
-/* Center Hub inside the circle */
-.wheel-hub{position:relative;z-index:4;width:118px;height:118px;border-radius:50%;background:var(--surface);border:1.5px solid var(--line);box-shadow:inset 0 1px 3px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 6px;text-align:center;transition:opacity .22s,transform .22s}
-nav.wheel-nav[data-raised="false"]:not(.dragging) .wheel-hub{opacity:0;pointer-events:none;transform:scale(.85)}
-.wheel-hub-title{font-family:var(--display);font-weight:800;font-size:15px;line-height:1.1;color:var(--ink)}
-.wheel-hub-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;line-height:1.2}
-.wheel-hub-btns{display:flex;gap:4px;margin-top:7px;flex-wrap:nowrap}
-.wheel-hub-btn{font:inherit;font-family:var(--mono);font-size:9.5px;font-weight:500;padding:4px 7px;border-radius:99px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;line-height:1.1;white-space:nowrap}
-.wheel-hub-btn.on{background:var(--amber-soft);border-color:var(--amber);color:var(--amber);font-weight:600}
+  .feat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 760px) { .feat-grid { grid-template-columns: 1fr; } }
+  .feat-cell { padding: 24px; display: grid; gap: 10px; align-content: start; }
+  .feat-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .feat-cell h3 {
+    margin: 0;
+    font-family: var(--aero-font-display);
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: var(--aero-tracking-display);
+  }
+  .feat-cell p { margin: 0; font-size: 14.5px; color: var(--aero-ink-2); }
 
-dialog#about{width:100%;max-width:680px;height:100%;max-height:100%;margin:0 auto;padding:0;border:0;background:var(--bg);color:var(--ink)}
-dialog#about::backdrop{background:rgba(5,12,11,.55)}
-@media(min-width:720px){dialog#about{height:auto;max-height:90vh;margin:5vh auto;border-radius:16px;border:1px solid var(--line)}}
-.ab-top{position:sticky;top:0;background:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(12px + var(--safe-top)) 16px 10px;border-bottom:1px solid var(--line);z-index:2}
-.ab-top b{font-family:var(--display);font-size:20px}
-.ab{padding:4px 16px calc(28px + var(--safe-bottom))}
-.ab p{margin:8px 0}.ab h2{margin-top:24px}
-.lede{font-size:16px}
-.flow{display:grid;gap:0;margin:8px 0}
-.node{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px}
-.node b{display:block;font-size:14px}.node span{color:var(--muted);font-size:13px}
-.node.k{border-color:var(--teal);background:var(--teal-soft)}
-.arrow{text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px;padding:2px 0;line-height:1.5}
-.arrow::before{content:"\2193  "}
-.lanes{display:grid;gap:10px}
-@media(min-width:620px){.lanes{grid-template-columns:1fr 1fr}}
-.lane{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--bg)}
-.lane h3{font-family:var(--mono);font-weight:500;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin:0 0 6px}
-.feat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
-.feat .row{justify-content:space-between;flex-wrap:nowrap}.feat b{font-size:15px}
-.feat p{margin:4px 0 0;color:var(--muted);font-size:14px}
-.widget{width:170px;height:170px;border-radius:22px;background:#1f3a37;color:#e6efed;padding:14px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 6px 20px rgba(0,0,0,.18);font-family:var(--body)}
-.widget .wd{font-family:var(--mono);font-size:10px;opacity:.75;text-transform:uppercase;letter-spacing:.08em}
-.widget .wn{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.widget .wn div{font-size:10px;opacity:.85;line-height:1.2}.widget .wn b{display:block;font-family:var(--display);font-size:22px;opacity:1}
-.widget .wx{font-size:10.5px;line-height:1.3;opacity:.9;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.wrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.wrow p{flex:1 1 200px}
-.tbl{display:grid;gap:6px}.tbl div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:14px}
-.tbl b{color:var(--teal)}
-.stack-tags{display:flex;flex-wrap:wrap;gap:6px}
-@media(prefers-reduced-motion:no-preference){.view.on{animation:f .18s ease-out}@keyframes f{from{opacity:.4}to{opacity:1}}}
+  .cap-grid { display: grid; gap: 20px; }
+  @media (min-width: 900px) { .cap-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); } }
+  .kbd-table { grid-template-columns: 1fr; }
+  .kbd-row {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    padding: 13px 16px;
+    font-size: 14px;
+  }
+  .kbd-keys { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+  .kbd-desc strong { display: block; font-size: 14px; color: var(--aero-ink); }
+  .kbd-desc span { font-size: 13px; color: var(--aero-ink-3); }
+
+  .sandbox { padding: 20px; display: grid; gap: 12px; }
+  .sandbox-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .cap-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--aero-canvas);
+    border: 1px solid var(--aero-line-strong);
+    border-radius: var(--aero-radius);
+    padding: 0 10px 0 12px;
+    min-height: 46px;
+  }
+  .cap-box:focus-within { border-color: var(--aero-accent); box-shadow: inset 0 -2px 0 var(--aero-accent); }
+  .cap-pr { font-family: var(--aero-font-mono); font-weight: 700; color: var(--aero-accent-2); }
+  .cap-box input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--aero-ink);
+    font: inherit;
+    font-size: 15px;
+    padding: 10px 0;
+  }
+  .sandbox-log { border: 1px solid var(--aero-line); border-radius: var(--aero-radius); background: var(--aero-canvas); padding: 4px 12px; }
+  .slog-row {
+    display: grid;
+    grid-template-columns: 48px 58px minmax(0, 1fr);
+    gap: 8px;
+    align-items: baseline;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--aero-line);
+    font-size: 13.5px;
+  }
+  .slog-row:last-child { border-bottom: 0; }
+  .slog-row time { font-family: var(--aero-font-mono); font-size: 11.5px; color: var(--aero-ink-3); }
+  .slog-row .k {
+    font-family: var(--aero-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--aero-accent-ink);
+  }
+
+  .sync-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 760px) { .sync-grid { grid-template-columns: 1fr; } }
+  .sync-card { padding: 24px; display: grid; gap: 12px; align-content: start; }
+  .sync-card h3 {
+    margin: 0;
+    font-family: var(--aero-font-display);
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: var(--aero-tracking-display);
+  }
+  .sync-card p { margin: 0; font-size: 14.5px; color: var(--aero-ink-2); }
+  .sync-code {
+    margin: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--aero-line);
+    border-radius: var(--aero-radius);
+    background: var(--aero-canvas);
+    font-family: var(--aero-font-mono);
+    font-size: 12px;
+    color: var(--aero-ink-2);
+    overflow-x: auto;
+  }
+
+  .site-footer { padding: 24px 0 36px; background: var(--aero-surface); }
+  .aero-skip:focus-visible, a:focus-visible, button:focus-visible { outline: 2px solid var(--aero-accent); outline-offset: 2px; }
 </style>
-</head><body>
-<div class="wrap">
-<header><div class="hdr-row"><h1>Daybook<span class="demo-tag">demo</span></h1><div class="hdr-actions"><button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle color theme" title="Toggle light/dark mode">Theme</button><button class="about-btn" id="aboutBtn" type="button" aria-haspopup="dialog">About</button></div></div><div class="date" id="date"></div><div id="fresh" class="fresh"></div></header>
+</head>
+<body>
+<a class="aero-skip" href="#main">Skip to main content</a>
 
-<section class="view" id="v-today">
-  <div class="grid" id="kpis"></div>
-  <div class="glance"><h3>At a glance</h3><ul id="glance"></ul></div>
-  <h2 id="todoh">To-do</h2>
-  <form class="add" id="todoForm"><input type="text" id="todoIn" placeholder="Add a to-do" aria-label="New to-do" autocomplete="off" enterkeyhint="done"><button class="btn p">Add</button></form>
-  <div id="todos"></div>
-  <p class="note" id="tthint"></p>
-  <h2 id="attnh">Needs your attention</h2><div id="attn"></div>
-  <h2>Spotlight</h2><div id="spot"></div>
-  <h2>Dated</h2><div id="dead"></div>
-  <h2>Overdue, for reference</h2><div id="over"></div>
-</section>
-
-<section class="view" id="v-jobs">
-  <div class="tools"><input type="search" id="q" placeholder="Search company or role" aria-label="Search jobs"></div>
-  <div class="chips" id="chips"></div>
-  <p class="note" id="jobcount"></p>
-  <div id="joblist"></div>
-</section>
-
-<section class="view" id="v-messages">
-  <p class="note">LinkedIn messages ready to send yourself. Tap Copy, open the profile, check the thread is empty, send, then mark it sent.</p>
-  <p class="note" id="msgcount" style="margin:6px 0 10px;font-family:var(--mono);font-size:12px"></p>
-  <div id="msglist"></div>
-  <h2>On hold (no role matched)</h2><div id="hold"></div>
-</section>
-
-<section class="view" id="v-tutoring">
-  <div class="tutor-subnav" role="tablist" aria-label="Tutoring sections">
-    <button type="button" class="tutor-tab-btn" id="tutorTabPipe" data-ttab="pipeline" aria-selected="true">
-      <span>Pipeline</span><span class="pill" id="badgePipeCount">0</span>
-    </button>
-    <button type="button" class="tutor-tab-btn" id="tutorTabFlyers" data-ttab="flyers" aria-selected="false">
-      <span>Flyers Tracker</span><span class="pill" id="badgeFlyersCount">0</span>
-    </button>
+<aero-global-header brand="chirp" home="./" coord="CHP-00 / HOME" stack>
+  <div slot="nav">
+    <a href="./" aria-current="page">Overview</a>
+    <a href="#features">Features</a>
+    <a href="#capture">Capture</a>
+    <a href="#sync">BirdBrains</a>
   </div>
-
-  <!-- Pipeline Tab -->
-  <div class="tutor-pane on" id="panePipeline">
-    <div class="stage-bar" id="leadStages" role="group" aria-label="Filter leads by stage"></div>
-    <div class="tutor-bar">
-      <input type="search" id="leadQ" placeholder="Search name, subject, city or flyer" aria-label="Search tutoring leads">
-      <button class="chip" type="button" id="leadAllBtn" aria-pressed="true">All</button>
-      <button class="chip" type="button" id="leadAddToggle" aria-expanded="false">+ Add lead</button>
-    </div>
-    <div id="leadAddWrap" hidden style="margin-bottom:10px">
-      <form class="stack" id="leadForm" style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px">
-        <input type="text" name="n" placeholder="Student name" aria-label="Name" required>
-        <input type="text" name="d" placeholder="Grade and subject (e.g. Gr 11 Chemistry)" aria-label="Grade and subject">
-        <input type="text" name="w" placeholder="Where &amp; times (remote or city, days)" aria-label="Where">
-        <input type="text" name="s" placeholder="Source (Bark, Flyer, Referral...)" aria-label="Source">
-        <textarea name="x" rows="2" placeholder="Notes" aria-label="Notes"></textarea>
-        <div class="row"><button class="btn sm p">Save lead</button><button class="btn sm" type="button" id="leadAddCancel">Cancel</button></div>
-      </form>
-    </div>
-    <div class="demo-try">
-      <span><b>Intake channels:</b> Gemini emails new leads, and flyers bring local parent calls.</span>
-      <button class="btn sm p" type="button" data-fakelead="1">+ Simulate Gemini lead</button>
-    </div>
-    <div id="leads"></div>
+  <div slot="actions">
+    <a class="aero-btn aero-btn--sm aero-btn--primary" href="app">Open App</a>
   </div>
+</aero-global-header>
 
-  <!-- Flyers Tab -->
-  <div class="tutor-pane" id="paneFlyers">
-    <div class="flyer-hero" id="flyerHero"></div>
-    <div id="flyerAlerts"></div>
-    <div class="tutor-bar">
-      <input type="search" id="flyerQ" placeholder="Search spot name, area or notes" aria-label="Search flyer spots">
-      <button class="chip" type="button" id="flyerFilterAll" data-ff="all" aria-pressed="true">All spots</button>
-      <button class="chip" type="button" id="flyerFilterRestock" data-ff="restock" aria-pressed="false">Needs restock</button>
-      <button class="chip" type="button" id="flyerAddToggle" aria-expanded="false">+ Log flyer spot</button>
-    </div>
-    <div id="flyerAddWrap" hidden style="margin-bottom:12px">
-      <form class="stack" id="flyerForm" style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px">
-        <input type="text" name="n" placeholder="Spot name (e.g. Waterloo Central Library)" aria-label="Spot name" required>
-        <input type="text" name="loc" placeholder="Placement area (e.g. Teen Study Hall Bulletin)" aria-label="Placement">
-        <div class="row">
-          <input type="number" name="total" placeholder="Tear-offs (e.g. 10)" aria-label="Tabs" value="10" min="1" max="25" style="width:120px">
-          <input type="text" name="date" placeholder="Date posted (YYYY-MM-DD)" aria-label="Date posted" style="flex:1">
+<main id="main">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="hero-badges">
+          <span class="aero-badge aero-badge--accent">CHP-00 · DAILY DAYBOOK</span>
+          <span class="aero-coord">KEYBOARD-FIRST · MOBILE PWA</span>
         </div>
-        <textarea name="notes" rows="2" placeholder="Notes (permission, corkboard spot, batch #)" aria-label="Notes"></textarea>
-        <div class="row"><button class="btn sm p">Save flyer spot</button><button class="btn sm" type="button" id="flyerAddCancel">Cancel</button></div>
-      </form>
-    </div>
-    <div id="flyersList"></div>
-  </div>
-</section>
+        <h1>Fast daily tasks, <em class="aero-serif">captured</em> before they slip.</h1>
+        <p class="hero-lede">
+          Chirp turns your morning brief, TickTick inbox, job applications, outreach messages, tutoring leads, and BirdBrains practice drills into one fast daily workspace.
+        </p>
+        <div class="hero-cta">
+          <a href="app" class="aero-btn aero-btn--primary aero-btn--lg">Open Chirp App &rarr;</a>
+          <a href="#capture" class="aero-btn aero-btn--lg">Try quick capture</a>
+        </div>
+      </div>
 
-<section class="view" id="v-updates">
-  <p class="note">Notes are saved on this phone. Claude, Gemini and Boardy can't open this page, so tap Email to send a note to your inbox (where they read it), or Copy and paste it into a chat.</p>
-  <h2>Notes for Claude</h2>
-  <form class="stack" data-ai="claude"><textarea placeholder="Write a note for Claude" aria-label="Note for Claude"></textarea><div class="row"><button class="btn p">Save note</button></div></form>
-  <div id="notes-claude"></div>
-  <h2>Notes for Gemini</h2>
-  <form class="stack" data-ai="gemini"><textarea placeholder="Write a note for Gemini" aria-label="Note for Gemini"></textarea><div class="row"><button class="btn p">Save note</button></div></form>
-  <div id="notes-gemini"></div>
-  <h2>Notes for Boardy</h2>
-  <form class="stack" data-ai="boardy"><textarea placeholder="Write a note for Boardy" aria-label="Note for Boardy"></textarea><div class="row"><button class="btn p">Save note</button></div></form>
-  <div id="notes-boardy"></div>
-  <h2>Today's updates</h2>
-  <div id="upd"></div>
-  <h2>Settings</h2>
-  <details id="settings"><summary>Email &amp; wheel layout (this phone only)</summary><div class="body"><div class="stack">
-    <label>Your email, for sending notes to Claude, Gemini and Boardy<input type="email" id="setEmail" placeholder="you@example.com" autocomplete="email"></label>
-    <div class="note" id="setEmailHint"></div>
-    <div class="row" style="margin-top:4px"><button class="btn sm" type="button" id="resetWheelBtn">Reset wheel tab order</button></div>
-  </div></div></details>
-</section>
-<p class="sync" id="sync"></p>
-</div>
-
-<dialog id="about" aria-labelledby="abTitle">
-<div class="ab-top"><b id="abTitle">About Daybook</b><button class="btn sm p" type="button" data-abclose="1">Explore the demo</button></div>
-<div class="ab">
-  <p class="lede">Daybook is the phone app I built to run my day. Each morning an AI-written brief turns my notes into a short list I can tick off with a thumb: jobs to apply to, LinkedIn messages to send, tutoring leads and to-dos.</p>
-  <p class="note">This is a working copy of the real app with <b>made-up sample data</b>. Every company, person and lead is fictional. Your taps are saved in this browser only.</p>
-
-  <h2>What happens each day</h2>
-  <div class="lanes">
-    <div class="lane"><h3>Morning: data in</h3><div class="flow">
-      <div class="node"><b>Notes vault</b><span>Job tracker, outreach drafts and diaries (Markdown, Obsidian)</span></div>
-      <div class="arrow">a scheduled Claude task reads it</div>
-      <div class="node"><b>Email Brief</b><span>Emails me the morning brief and writes today's numbers as JSON</span></div>
-      <div class="arrow">every 30 min, 8:00 to 14:30</div>
-      <div class="node"><b>refresh-daybook.mjs</b><span>Rebuilds jobs, messages and Today; filters and sorts; checks what changed</span></div>
-      <div class="arrow">POST /api/data</div>
-      <div class="node k"><b>Daybook API</b><span>Netlify Functions + Blobs. No redeploy needed for new data</span></div>
-      <div class="arrow">loaded when the app opens</div>
-      <div class="node k"><b>This app</b><span>Today, Jobs, Messages, Tutoring, Updates</span></div>
-    </div></div>
-    <div class="lane"><h3>All day: taps and live updates</h3><div class="flow">
-      <div class="node"><b>Tap Applied, Skip, Sent or Done</b><span>Saved on the phone, then sent to /api/state (newest write wins)</span></div>
-      <div class="arrow">next refresh</div>
-      <div class="node"><b>Daybook-Ticks.md in the vault</b><span>Tomorrow's brief treats my taps as my word and drops finished items</span></div>
-      <div class="arrow">meanwhile</div>
-      <div class="node"><b>Gemini finds a tutoring lead</b><span>Emails a JSON block with subject "Daybook lead"</span></div>
-      <div class="arrow">Apps Script checks Gmail every 5 min</div>
-      <div class="node k"><b>/api/leads</b><span>Shows in Tutoring as "just in"</span></div>
-      <div class="arrow">and</div>
-      <div class="node"><b>TickTick</b><span>To-dos sync both ways through OAuth: add here, tick here, done there</span></div>
-    </div></div>
-  </div>
-
-  <h2>Tour the tabs</h2>
-  <div class="feat"><div class="row"><b>Today</b><button class="btn sm" data-abgo="today">Open</button></div><p>Key numbers (tap one to jump to its tab), an "At a glance" summary, to-dos synced with TickTick, items that need attention with Done ticks, top roles, dates and overdue items.</p></div>
-  <div class="feat"><div class="row"><b>Jobs</b><button class="btn sm" data-abgo="jobs">Open</button></div><p>Open roles, grouped: almost done or closing soon, new in the last two days, then the rest by match score. Search, filter, and mark Applied or Skip.</p></div>
-  <div class="feat"><div class="row"><b>Messages</b><button class="btn sm" data-abgo="messages">Open</button></div><p>LinkedIn messages drafted for me. I copy, send them myself, and mark them sent. Nothing is ever sent automatically.</p></div>
-  <div class="feat"><div class="row"><b>Tutoring</b><button class="btn sm" data-abgo="tutoring">Open</button></div><p>Leads for my tutoring side business, moved between New, Contacted, Students and Closed, with notes. Try "Simulate a Gemini lead email" there.</p></div>
-  <div class="feat"><div class="row"><b>Updates</b><button class="btn sm" data-abgo="updates">Open</button></div><p>Notes I leave for my AI helpers (sent by email or share sheet), and the day's reports from each automation.</p></div>
-
-  <h2>Home-screen widget</h2>
-  <div class="wrow"><div class="widget" id="wPrev" aria-label="Widget preview"></div>
-  <p class="note">A Scriptable widget on the iPhone home screen reads <code>/api/widget</code>: today's key numbers, TickTick tasks due or overdue, and the next dates. The sample script is in <code>widget/</code> in the repo.</p></div>
-
-  <h2>In this demo</h2>
-  <div class="tbl">
-    <div><b>Real:</b> the page itself. It is the production code, a single HTML file with no framework and no build step.</div>
-    <div><b>Simulated:</b> TickTick (a pretend account in memory), tap sync (stays in this browser), live leads (the button in Tutoring) and the widget (preview above).</div>
-    <div><b>Left out:</b> my notes, contacts, leads and keys. The backend code in the repo reads every secret from environment variables.</div>
-  </div>
-
-  <h2>Built with</h2>
-  <div class="stack-tags"><span class="pill t">HTML, CSS, vanilla JS</span><span class="pill t">Netlify Functions</span><span class="pill t">Netlify Blobs</span><span class="pill t">Node.js scripts</span><span class="pill t">Windows Task Scheduler</span><span class="pill t">TickTick Open API (OAuth)</span><span class="pill t">Google Apps Script</span><span class="pill t">Scriptable (iOS)</span><span class="pill t">Claude scheduled tasks</span><span class="pill t">Gemini</span><span class="pill t">PWA / Add to Home Screen</span></div>
-  <p class="note" style="margin-top:14px">Design choices: works one-handed (44px+ tap targets, a rotating thumb wheel at the bottom you can raise, spin and rearrange), light and dark mode, loads instantly from the copy built into the page and then swaps in fresher data, and falls back to a list on the phone when the API can't be reached. The real site sits behind a login; the API checks a key on every request and an OAuth state value on the TickTick callback.</p>
-  <div class="row" style="margin-top:16px"><button class="btn p" type="button" data-abclose="1">Explore the demo</button></div>
-</div>
-</dialog>
-
-<div class="wheel-backdrop" id="wheelBackdrop" aria-hidden="true"></div>
-<nav class="wheel-nav" id="wheelNav" data-raised="false" data-arrange="false" aria-label="Sections">
-  <button type="button" class="wheel-handle" id="wheelHandle" aria-expanded="false" aria-controls="wheelRotor" aria-label="Raise or lower navigation wheel">
-    <svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>
-    <span id="wheelHandleTxt">Raise dial</span>
-  </button>
-  <div class="wheel-shell" id="wheelShell">
-    <div class="wheel-target" aria-hidden="true"></div>
-    <div class="wheel-rotor" id="wheelRotor">
-      <a class="wheel-item" href="#today" data-v="today"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-6h4v6"/></svg><span class="w-lbl">Today</span><span class="w-badge" data-wb="today" hidden></span></a>
-      <a class="wheel-item" href="#jobs" data-v="jobs"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2"/></svg><span class="w-lbl">Jobs</span><span class="w-badge" data-wb="jobs" hidden></span></a>
-      <a class="wheel-item" href="#messages" data-v="messages"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg><span class="w-lbl">Messages</span><span class="w-badge" data-wb="messages" hidden></span></a>
-      <a class="wheel-item" href="#tutoring" data-v="tutoring"><svg viewBox="0 0 24 24"><path d="M2 9l10-4 10 4-10 4z"/><path d="M6 11v5c3.5 2.5 8.5 2.5 12 0v-5"/></svg><span class="w-lbl">Tutoring</span><span class="w-badge" data-wb="tutoring" hidden></span></a>
-      <a class="wheel-item" href="#updates" data-v="updates"><svg viewBox="0 0 24 24"><path d="M5 5h14M5 12h14M5 19h9"/></svg><span class="w-lbl">Updates</span><span class="w-badge" data-wb="updates" hidden></span></a>
-    </div>
-    <div class="wheel-hub" id="wheelHub">
-      <div class="wheel-hub-title" id="wheelHubTitle">Today</div>
-      <div class="wheel-hub-sub" id="wheelHubSub">Spin to switch</div>
-      <div class="wheel-hub-btns">
-        <button type="button" class="wheel-hub-btn" id="wheelArrangeBtn" aria-pressed="false" title="Move tabs to new slots on the wheel">Move tabs</button>
-        <button type="button" class="wheel-hub-btn" id="wheelLowerBtn" title="Lower wheel">Done</button>
+      <div class="hero-right">
+        <div class="plate-row">
+          <figure class="aero-plate aero-blueprint" style="margin:0" title="Hover or click to morph 2D Origami ⇄ 3D Isometric">
+            <aero-morph brand="chirp" label="Chirp 3D Songbird mark" style="width:100%;height:100%"></aero-morph>
+            <figcaption style="display:contents">
+              <span class="aero-plate__tag aero-plate__tag--tl">Fig. 01</span>
+              <span class="aero-plate__tag aero-plate__tag--tr">CHP</span>
+              <span class="aero-plate__tag aero-plate__tag--bl">48×48</span>
+              <span class="aero-plate__tag aero-plate__tag--br">Iso 30°</span>
+            </figcaption>
+          </figure>
+          <dl class="aero-cells spec-cells">
+            <div class="spec-cell">
+              <dd>06</dd>
+              <dt>Focused views on the rotating dial</dt>
+            </div>
+            <div class="spec-cell">
+              <dd>01</dd>
+              <dt>Unified capture bar for tasks &amp; logs</dt>
+            </div>
+            <div class="spec-cell">
+              <dd>&lt;1s</dd>
+              <dt>Zero-server BirdBrains drill hand-off</dt>
+            </div>
+          </dl>
+        </div>
+        <div class="aero-panel" style="padding:16px 18px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;">
+            <span class="aero-eyebrow">Built For Speed</span>
+            <span class="aero-coord">SYNCED TO VAULT + DEVICE</span>
+          </div>
+          <p style="margin:0;font-size:14px;color:var(--aero-ink-2);">
+            Works from a laptop keyboard with <span class="aero-kbd">/</span> and <span class="aero-kbd">1</span>–<span class="aero-kbd">6</span> shortcuts, or one-handed on a phone with swipe gestures and a thumb-reachable dial.
+          </p>
+        </div>
       </div>
     </div>
+  </section>
+
+  <section class="section section--surface" id="features">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="aero-index" aria-hidden="true">[CHP-01]</span> Six Views, One Daily Loop</h2>
+        <p class="sec-sub">Everything needed for the day without opening five separate tabs.</p>
+      </div>
+
+      <div class="aero-cells feat-grid">
+        <article class="feat-cell">
+          <div class="feat-top">
+            <span class="aero-eyebrow">01 · Today &amp; Brief</span>
+            <span class="aero-badge aero-badge--ok">TickTick Sync</span>
+          </div>
+          <h3>Morning Overview &amp; Next Priority</h3>
+          <p>Progress ring, single “Do this next” priority card, dated agenda, TickTick tasks, and a live timestamped daily log.</p>
+        </article>
+        <article class="feat-cell">
+          <div class="feat-top">
+            <span class="aero-eyebrow">02 · Jobs &amp; Messages</span>
+            <span class="aero-badge aero-badge--accent">Swipe Actions</span>
+          </div>
+          <h3>Applications &amp; LinkedIn Queue</h3>
+          <p>Scored role list with swipe right to mark applied and swipe left to skip, plus a one-card-at-a-time outreach deck.</p>
+        </article>
+        <article class="feat-cell">
+          <div class="feat-top">
+            <span class="aero-eyebrow">03 · Tutoring Board</span>
+            <span class="aero-badge">4 Stages</span>
+          </div>
+          <h3>Leads, Clients &amp; Billing</h3>
+          <p>Stage tiles for new leads, contacted families, active students, and expected weekly earnings — wired to Swift Skills quote intake.</p>
+        </article>
+        <article class="feat-cell">
+          <div class="feat-top">
+            <span class="aero-eyebrow">04 · Rotating Dial</span>
+            <span class="aero-badge">Mobile First</span>
+          </div>
+          <h3>Thumb-Reachable Navigation</h3>
+          <p>A compact bottom wheel you raise and spin with one thumb on mobile, with drag-and-drop tab reordering.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="capture">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="aero-index" aria-hidden="true">[CHP-02]</span> Keyboard-First Quick Capture</h2>
+        <p class="sec-sub">Press <span class="aero-kbd">/</span> anywhere in the app to file a task, log line, or note.</p>
+      </div>
+
+      <div class="cap-grid">
+        <div class="aero-cells kbd-table">
+          <div class="kbd-row">
+            <div class="kbd-keys"><span class="aero-kbd">/</span></div>
+            <div class="kbd-desc"><strong>Focus capture</strong><span>Jumps straight to Today&rsquo;s capture bar.</span></div>
+          </div>
+          <div class="kbd-row">
+            <div class="kbd-keys"><span class="aero-kbd">&crarr;</span></div>
+            <div class="kbd-desc"><strong>Add task</strong><span>Files a to-do and records it in today&rsquo;s log.</span></div>
+          </div>
+          <div class="kbd-row">
+            <div class="kbd-keys"><span class="aero-kbd">log</span></div>
+            <div class="kbd-desc"><strong>Write a log entry</strong><span>Prefix with <code>log</code> to timestamp an update.</span></div>
+          </div>
+          <div class="kbd-row">
+            <div class="kbd-keys"><span class="aero-kbd">note</span></div>
+            <div class="kbd-desc"><strong>Save a note</strong><span>Prefix with <code>note</code> to queue an AI hand-off note.</span></div>
+          </div>
+          <div class="kbd-row">
+            <div class="kbd-keys"><span class="aero-kbd">1</span>–<span class="aero-kbd">6</span></div>
+            <div class="kbd-desc"><strong>Switch views</strong><span>Jump directly between Today, Jobs, Messages, Tutoring, BirdBrains, Updates.</span></div>
+          </div>
+        </div>
+
+        <div class="aero-panel sandbox">
+          <div class="sandbox-head">
+            <span class="aero-eyebrow">Try Capture Syntax</span>
+            <span class="aero-coord">LOCAL SANDBOX</span>
+          </div>
+          <form id="demoCap" autocomplete="off">
+            <label class="cap-box" for="demoCapIn">
+              <span class="cap-pr" aria-hidden="true">&rsaquo;</span>
+              <input id="demoCapIn" type="text" placeholder="Try: log Finished quadratic worksheet, or Enter a task" aria-label="Try quick capture syntax">
+              <button type="submit" class="aero-btn aero-btn--sm aero-btn--primary">Add</button>
+            </label>
+          </form>
+          <div class="sandbox-log" id="demoLog" aria-live="polite">
+            <div class="slog-row"><time>09:15</time><span class="k">import</span><span>3 practice drills from BirdBrains: Completing the Square</span></div>
+            <div class="slog-row"><time>09:42</time><span class="k">task</span><span>Send follow-up reply to Grade 10 math lead</span></div>
+            <div class="slog-row"><time>10:10</time><span class="k">log</span><span>Submitted Northwind Labs Data Analyst application</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:13px;color:var(--aero-ink-3);">Sandbox entries stay in memory only.</span>
+            <a href="app" class="aero-btn aero-btn--sm">Launch full app &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface" id="sync">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="aero-index" aria-hidden="true">[CHP-03]</span> Connected Across Aero</h2>
+        <p class="sec-sub">Direct hand-offs from BirdBrains diagnostics and tutoring quote requests.</p>
+      </div>
+
+      <div class="aero-cells sync-grid">
+        <article class="sync-card" data-aero-brand="birdbrains">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <aero-logo brand="birdbrains" variant="isometric" size="30"></aero-logo>
+            <span class="aero-badge aero-badge--accent">BB &rarr; CHP</span>
+          </div>
+          <h3>One-Click Practice Drill Import</h3>
+          <p>Press <strong>Send to Chirp</strong> on any BirdBrains worksheet. The three practice drills travel in the URL fragment and land directly in Chirp&rsquo;s Today and BirdBrains tabs.</p>
+          <pre class="sync-code">/app#import=&lt;base64url-payload&gt;</pre>
+        </article>
+        <article class="sync-card" data-aero-brand="chirp">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <aero-logo brand="chirp" variant="isometric" size="30"></aero-logo>
+            <span class="aero-badge aero-badge--accent">CHP-01 · APP</span>
+          </div>
+          <h3>Ready for Daily Work</h3>
+          <p>Open the full Chirp app to check today&rsquo;s brief, manage leads, or install it to your phone home screen as a standalone PWA.</p>
+          <div>
+            <a href="app" class="aero-btn aero-btn--primary">Open Chirp App &rarr;</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <aero-footer brand="chirp" home="./"></aero-footer>
   </div>
-</nav>
+</footer>
 
 <script src="config.js"></script>
+<script type="module" src="aero/aero-shell.js"></script>
 <script>
-/* SAMPLE DATA. Every company, person, lead and link below is made up for this demo.
-   In the real app, tools/refresh-daybook.mjs rewrites DATA and P every morning from the user's notes vault. */
-const DATA={"jobs":[
-{"id":"lakeshore_photonics_optical_coop","co":"Lakeshore Photonics","t":"Optical Test Engineering Co-op (16 months, May 2027)","term":"Summer 2027","s":91,"u":"https://example.com/jobs/lakeshore-optical-coop","a":0},
-{"id":"granite_power_systems_s27","co":"Granite Power Engineering","t":"Power Systems Engineering Intern","term":"Summer 2027","s":88,"u":"https://example.com/jobs/granite-power-systems","a":9},
-{"id":"copperline_validation_w27","co":"Copperline Semiconductors","t":"Silicon Validation Co-op","term":"Winter 2027","s":86,"u":"https://example.com/jobs/copperline-validation","a":5,"flag":"needs sign-in"},
-{"id":"kestrel_controls_w27","co":"Kestrel Automation","t":"Controls and PLC Engineering Student","term":"Winter 2027","s":84,"u":"https://example.com/jobs/kestrel-controls","a":6},
-{"id":"polaris_embedded_fw_s27","co":"Polaris Networks","t":"Embedded Firmware Intern (C/C++)","term":"Summer 2027","s":83,"u":"https://example.com/jobs/polaris-embedded-fw","a":0},
-{"id":"helio_grid_storage_w27","co":"Helio Grid Systems","t":"Battery Storage Engineering Co-op","term":"Winter 2027","s":81,"u":"https://example.com/jobs/helio-grid-storage","a":1},
-{"id":"bluefin_hw_test_w27","co":"Bluefin Medical Devices","t":"Hardware Test Engineering Co-op","term":"Winter 2027","s":80,"u":"https://example.com/jobs/bluefin-hw-test","a":4,"flag":"needs answers"},
-{"id":"arcturus_avionics_s27","co":"Arcturus Aerospace","t":"Avionics Systems Intern (12-16 months)","term":"Summer 2027","s":79,"u":"https://example.com/jobs/arcturus-avionics","a":0},
-{"id":"northwind_robotics_perception","co":"Northwind Robotics","t":"Perception Software Co-op","term":"Winter 2027","s":77,"u":"https://example.com/jobs/northwind-perception","a":8},
-{"id":"ironwood_rail_signals_s27","co":"Ironwood Rail","t":"Signals and Communications Engineering Student","term":"Summer 2027","s":75,"u":"https://example.com/jobs/ironwood-signals","a":11},
-{"id":"summit_controls_hmi","co":"Summit Controls","t":"HMI and SCADA Developer Co-op","term":"Winter 2027","s":73,"u":"https://example.com/jobs/summit-hmi","a":3},
-{"id":"tidal_embedded_dsp","co":"Tidal Embedded","t":"DSP Firmware Co-op (16 months)","term":"Summer 2027","s":72,"u":"https://example.com/jobs/tidal-dsp","a":1},
-{"id":"orbitworks_ground_sw","co":"Orbitworks","t":"Ground Station Software Intern","term":"Summer 2027","s":70,"u":"https://example.com/jobs/orbitworks-ground","a":13},
-{"id":"riverbend_water_auto","co":"Riverbend Water Tech","t":"Process Automation Co-op","term":"Winter 2027","s":68,"u":"https://example.com/jobs/riverbend-automation","a":15},
-{"id":"maple_transit_data","co":"Maple Transit Labs","t":"Data Engineering Co-op","term":"Winter 2027","s":66,"u":"https://example.com/jobs/maple-transit-data","a":7},
-{"id":"cedar_analytics_qa","co":"Cedar Analytics","t":"QA Automation Co-op","term":"Winter 2027","s":62,"u":"https://example.com/jobs/cedar-qa","a":10},
-{"id":"brightwater_field_eng","co":"Brightwater Energy","t":"Field Engineering Student","term":"Summer 2027","s":60,"u":"https://example.com/jobs/brightwater-field","a":16},
-{"id":"quantum_lane_it_support","co":"Quantum Lane","t":"IT Systems Co-op","term":"Winter 2027","s":57,"u":"https://example.com/jobs/quantum-lane-it","a":18}
-],"msgs":[
-{"id":"jordan_okafor","p":"Jordan Okafor","co":"Lakeshore Photonics","role":"Optical Test Engineering Co-op","u":"https://example.com/profile/jordan-okafor","m":"Hi Jordan, I'm a third-year electrical engineering student and just applied to the Optical Test Engineering co-op on your team. I've spent the last term building a fibre-coupled test rig in our photonics lab, and I'd love to hear what the first few months on the team look like. Thanks for reading!"},
-{"id":"mei_lin_tran","p":"Mei-Lin Tran","co":"Polaris Networks","role":"Embedded Firmware Intern","u":"https://example.com/profile/mei-lin-tran","m":"Hi Mei-Lin, I saw you moved from the co-op program to full-time firmware at Polaris. I'm applying for the Summer 2027 embedded internship and have shipped C firmware for an STM32 sensor board in my design team. Would you be open to a 10-minute chat about what helped you stand out?"},
-{"id":"sam_beaulieu","p":"Sam Beaulieu","co":"Kestrel Automation","role":"Controls and PLC Engineering Student","u":"","m":"Hi Sam, thanks for the talk at the engineering society last week. I've applied to the Controls and PLC student role and would value any advice on the technical interview. I've been practising ladder logic on a small conveyor sorter in our lab."}
-]};
-const P={
-"date":"",
-"kpis":[["18","open roles to apply to","good"],["4","new roles today (best: Lakeshore Photonics, 91)","hot"],["2","LinkedIn requests sent today",""],["1","new Boardy intro (Helio Grid)",""],["3","messages ready to send","hot"],["5","tutoring leads waiting",""]],
-"glance":["<b>Granite Power Engineering closes tomorrow.</b> Apply today, the cover letter is drafted.","<b>4 new roles:</b> Lakeshore Photonics (91), Polaris Networks (83), Arcturus Aerospace (79) and one more.","<b>2 applications are nearly done:</b> Kestrel Automation and Bluefin Medical, see the top of Jobs.","<b>3 LinkedIn messages</b> are ready to copy and send."],
-"attn":[["Granite Power Engineering closes tomorrow","Power Systems Engineering Intern, score 88. Resume and cover letter are in the vault, ready to upload."],["Two forms open, need you to finish","Kestrel Automation: upload transcript, then Submit. Bluefin Medical: answer two short questions, then Submit."],["Reply to tutoring lead Ava","Asked for a Thursday trial session. Contacted yesterday, waiting on a time."]],
-"spot":[["Lakeshore Photonics","Optical Test Engineering Co-op (16 months)","91","Top score this week, found today. Matches lab photonics work.","https://example.com/jobs/lakeshore-optical-coop"],["Polaris Networks","Embedded Firmware Intern","83","New today. C/C++ firmware, close fit to the design-team board.","https://example.com/jobs/polaris-embedded-fw"],["Arcturus Aerospace","Avionics Systems Intern","79","New today. 12-16 month term, Summer start.","https://example.com/jobs/arcturus-avionics"]],
-"dead":[["Granite Power Engineering intern","Tomorrow"],["Coffee chat, alumni mentor","Mon, 10:00 AM"],["Copperline Semiconductors co-op","In 9 days"],["Scholarship essay draft","Fri"]],
-"over":[["Return library equipment","Was due last Tuesday."],["Update transcript on the co-op portal","Was due two days ago."]],
-"hold":["Dana Whitfield (Summit Controls), no role open yet","Rohan Mehta, waiting for a referral","Chris Albrecht (Orbitworks)"],
-"upd":[["Found by Boardy","<p><b>Job-relevant:</b> Priya N., Senior Engineer at Helio Grid Systems, good fit for the Battery Storage co-op.</p><p>Yesterday: no new names.</p>"],["LinkedIn requests","<p>2 sent today (Polaris Networks, Lakeshore Photonics). 1 needs a profile link before it can go out.</p>"],["Job Applier","<p>Filled 3 forms up to the last page: Kestrel Automation, Bluefin Medical, Tidal Embedded. Nothing submitted; you press Submit yourself.</p>"],["Career diary","<p>Mock interview booked for Thursday. Resume v7 is the current version.</p>"],["Tutoring diary","<p>2 sessions this week (Gr 10 math, Gr 12 physics). One new student starting Monday.</p>"],["Gemini tutoring leads","<p>3 new qualified leads overnight, all remote-friendly. No credits spent.</p>"]],
-"dataDate":"",
-"textDate":"",
-"updated":"",
-"almost":[["Kestrel Automation","","upload transcript + Submit"],["Bluefin Medical","","answer 2 questions + Submit"]],
-"leads":[{"id":"bark_ava_gr12_physics","n":"Ava","d":"Gr 12 Physics","w":"Remote, Tue/Thu evenings","s":"Bark","x":"Qualified. Asked for a trial session.","date":0},{"id":"bark_noah_gr9_math","n":"Noah","d":"Gr 9 Math","w":"In person, weekends","s":"Bark","x":"Qualified. 4 credits to unlock.","date":0},{"id":"bark_layla_gr11_chem","n":"Layla","d":"Gr 11 Chemistry","w":"Remote OK, weekday afternoons","s":"Bark","x":"Qualified. 5 credits to unlock.","date":1},{"id":"bark_ethan_calc","n":"Ethan","d":"Gr 12 Calculus","w":"In person or remote, twice a week","s":"Bark","x":"Borderline: wants exam prep only.","date":2},{"id":"ref_maya_gr10_math","n":"Maya","d":"Gr 10 Math","w":"Remote, Sunday mornings","s":"Referral","x":"Referred by a current student's parent.","date":3}],
-"builtAt":""
-};
-const $=s=>document.querySelector(s);
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let st={jobs:{},msgs:{}},ref=null,filter='todo',query='',chain=Promise.resolve(),synced=window.DAYBOOK_DEMO?'this browser (demo)':'this phone';
-try{const x=JSON.parse(localStorage.getItem('cod_state')||'null');if(x&&x.jobs)st=x}catch(e){}
-st.done=st.done||{};
-/* To-dos, notes for Claude/Gemini, tutoring leads, flyer drops: saved per phone under 'daybook_mine'. */
-const DEFAULT_FLYERS=[
- {id:'f_wcl',n:'Waterloo Central Library',loc:'Teen Study Hall Corkboard',date:'2026-11-01',total:10,rem:2,calls:3,notes:'Grace saw this one. High student traffic near study pods.'},
- {id:'f_ucr',n:'Uptown Coffee Roasters',loc:'Community Board by Pickup Counter',date:'2026-11-04',total:10,rem:7,calls:1,notes:'Staff approved on the corkboard.'},
- {id:'f_chc',n:'Cameron Heights CI Kiosk',loc:'High School Walkway Bulletin',date:'2026-11-08',total:12,rem:4,calls:2,notes:'Great visibility for Gr 11/12 math & physics.'},
- {id:'f_lcc',n:'Laurelwood Community Centre',loc:'Entrance Foyer Board',date:'2026-10-25',total:10,rem:0,calls:1,notes:'All tear-offs gone! Restock printed batch #3.'},
- {id:'f_rim',n:'RIM Park Sportsplex',loc:'Lobby Arena Board',date:'2026-11-10',total:10,rem:9,calls:0,notes:'Posted beside rink 2 bulletin.'}
-];
-let M={todos:[],notes:{claude:[],gemini:[],boardy:[]},leads:{},myLeads:[],flyers:DEFAULT_FLYERS.slice(),set:{email:'',tt:''}};
-try{const y=JSON.parse(localStorage.getItem('daybook_mine')||'null');if(y)M=Object.assign(M,y)}catch(e){}
-if(!Array.isArray(M.flyers)||!M.flyers.length)M.flyers=DEFAULT_FLYERS.slice();
-function saveM(){try{localStorage.setItem('daybook_mine',JSON.stringify(M))}catch(e){}}
-let LIVE=[];try{LIVE=JSON.parse(localStorage.getItem('daybook_live')||'[]')}catch(e){}
-const SEEDLEADS0=[
- {id:'bark_omar',n:'Omar',d:'Gr 8 Math',w:'Remote, flexible',s:'Bark',x:'Sent Bark intro message, waiting on reply.',status:'contacted'},
- {id:'flyer_grace',n:'Grace',d:'Gr 11 Functions',w:'Library, Saturdays',s:'Flyer',spot:'Waterloo Central Library',x:'Called once, left a voicemail. Saw tear-off flyer at Central Library.',status:'contacted'},
- {id:'stu_lucas',n:'Lucas',d:'Gr 10 Math',w:'Remote, Wednesdays 5 PM',s:'Referral',x:'Weekly sessions, working on quadratics.',status:'booked'},
- {id:'stu_chloe',n:'Chloe',d:'Gr 12 Physics',w:'Remote, Sundays 2 PM',s:'Bark',x:'Kinematics & dynamics review.',status:'booked'},
- {id:'bark_ben',n:'Ben',d:'Gr 11 Functions',w:'In person, west end',s:'Bark',x:'Passed: too far to travel.',status:'closed'},
- {id:'bark_hannah',n:'Hannah',d:'Gr 9 Science',w:'Remote, Thursdays',s:'Bark',x:'Found another tutor through school.',status:'closed'}
-];
-const seedLeads=()=>(P.leads||[]).concat(SEEDLEADS0.filter(l=>!(P.leads||[]).some(x=>x.id===l.id)));
-function leadList(){const ids=new Set(LIVE.map(l=>l.id));return LIVE.map(l=>Object.assign({},l,{live:1})).concat(seedLeads().filter(l=>!ids.has(l.id))).concat(M.myLeads).map(l=>{const o=M.leads[l.id]||{};const defSt=l.status||'new';return Object.assign({},l,{st:o.st||defSt,x:o.x!=null?o.x:(l.x||'')})})}
-
-function save(){st.ts=Date.now();try{localStorage.setItem('cod_state',JSON.stringify(st))}catch(e){}
- if(ref){const snap=JSON.parse(JSON.stringify(st));chain=chain.then(()=>ref.set(snap)).catch(()=>{synced='this device (cloud save failed)';sync()})}
- pushState();updateWheelBadges()}
-/* Applied/Skip/Sent/Done taps also go to the Daybook API, so other phones and the morning Email Brief see them. */
-function pushState(){if(window.DAYBOOK_DEMO){synced='this browser (demo; the real app also syncs it to the API and the vault)';sync();return}
- if(!window.DAYBOOK_API)return;const b=JSON.stringify(st);
- fetch(DAYBOOK_API.url+'/state',{method:'POST',headers:{'x-daybook-key':DAYBOOK_API.key,'content-type':'application/json'},body:b})
-  .then(r=>{if(r.status===409)return loadState();if(!r.ok)throw 0;synced='this phone and your vault';sync()})
-  .catch(()=>{synced='this phone only (sync failed, will retry)';sync()})}
-function loadState(){if(!window.DAYBOOK_API)return Promise.resolve();
- return fetch(DAYBOOK_API.url+'/state',{headers:{'x-daybook-key':DAYBOOK_API.key}}).then(r=>r.ok?r.json():Promise.reject()).then(s=>{
-  if((s.ts||0)>(st.ts||0)){st={jobs:s.jobs||{},msgs:s.msgs||{},done:s.done||{},ts:s.ts};try{localStorage.setItem('cod_state',JSON.stringify(st))}catch(e){}renderToday();all()}
-  else if((st.ts||0)>(s.ts||0)||(!s.ts&&(Object.keys(st.jobs).length||Object.keys(st.msgs).length))){st.ts=st.ts||Date.now();return pushState()}
-  synced='this phone and your vault';sync()}).catch(()=>{synced='this phone only (sync failed)';sync()})}
-function sync(){$('#sync').textContent='Checklist saved on '+synced+' · '+(P.updated||'')}
-const isoDay=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-const TODAY=isoDay(new Date());
-function fresh(){const el=$('#fresh');if(!el)return;if(!P.builtAt){el.textContent='';return}
- const b=new Date(P.builtAt),t=b.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
- const stale=P.dataDate!==TODAY||(P.textDate&&P.textDate!==TODAY);
- el.className='fresh'+(stale?' stale':'');
- el.textContent=stale?('Not refreshed today · last update '+b.toLocaleDateString([],{month:'short',day:'numeric'})+', '+t):('Updated '+t)}
-const KPILINK=[[/role|job/i,'jobs'],[/message/i,'messages'],[/bark|lead|tutor/i,'tutoring'],[/boardy|linkedin|request/i,'updates']];
-const kpiHref=l=>{const m=KPILINK.find(k=>k[0].test(String(l).replace(/<[^>]+>/g,'')));return m?'#'+m[1]:''};
-const doneKey=a=>(P.textDate||'')+'|'+String(a[0]).replace(/<[^>]+>/g,'').slice(0,80);
-function pill(s){return '<span class="pill '+(s>=85?'g':s>=70?'t':'')+'">'+s+'</span>'}
-function card(cls,sum,body,open){return '<details class="'+cls+'"'+(open?' open':'')+'><summary>'+sum+'</summary><div class="body">'+body+'</div></details>'}
-
-function liveStats(){
- const jobs=DATA.jobs||[],msgs=DATA.msgs||[],leads=leadList();
- let openJobs=0,appliedJobs=0,skipJobs=0;
- jobs.forEach(j=>{const v=st.jobs[j.id];if(v==='applied')appliedJobs++;else if(v==='skip')skipJobs++;else openJobs++});
- const sentMsgs=msgs.filter(m=>st.msgs[m.id]).length,openMsgs=msgs.length-sentMsgs;
- const newLeads=leads.filter(l=>l.st==='new').length;
- const flyerRestocks=(M.flyers||[]).filter(f=>f.rem<=2).length;
- const attn=(P.attn||[]),doneAttn=attn.filter(a=>st.done[doneKey(a)]).length,openAttn=attn.length-doneAttn;
- return {openJobs,appliedJobs,skipJobs,openMsgs,sentMsgs,newLeads,flyerRestocks,openAttn,doneAttn,totalAttn:attn.length};
-}
-
-function renderToday(){
- $('#date').textContent=P.date;fresh();
- const S=liveStats();
- const kpis=(P.kpis||[]).map(k=>{
-  let n=k[0],lbl=k[1],tone=k[2]||'';
-  if(/open roles/i.test(lbl)){n=String(S.openJobs);lbl='open roles to apply to'+(S.appliedJobs?' ('+S.appliedJobs+' applied)':'');tone=S.openJobs?'good':''}
-  else if(/messages ready/i.test(lbl)){n=String(S.openMsgs);lbl=S.openMsgs===1?'message ready to send':'messages ready to send'+(S.sentMsgs?' ('+S.sentMsgs+' sent)':'');tone=S.openMsgs?'hot':'good'}
-  else if(/tutoring leads/i.test(lbl)){n=String(S.newLeads);lbl=(S.newLeads===1?'tutoring lead waiting':'tutoring leads waiting')+(S.flyerRestocks?' ('+S.flyerRestocks+' flyer restock)':'');tone=S.newLeads>5||S.flyerRestocks?'hot':''}
-  return [n,lbl,tone];
- });
- $('#kpis').innerHTML=kpis.map(k=>{const h=kpiHref(k[1]),inner='<b>'+esc(k[0])+'</b><span>'+esc(k[1])+(h?' &rsaquo;':'')+'</span>';return h?'<a class="kpi '+k[2]+'" href="'+h+'">'+inner+'</a>':'<div class="kpi '+k[2]+'">'+inner+'</div>'}).join('');
- $('#glance').innerHTML=P.glance.map(g=>'<li>'+g+'</li>').join('');
- const A=P.attn.map(a=>({a,k:doneKey(a)})).sort((x,y)=>!!st.done[x.k]-!!st.done[y.k]);
- const nd=A.filter(x=>st.done[x.k]).length;
- $('#attnh').innerHTML='<span>Needs your attention</span>'+(A.length?'<span class="pill '+(nd===A.length?'g':'a')+'">'+nd+' / '+A.length+' done</span>':'');
- $('#attn').innerHTML=A.map(({a,k})=>{const d=!!st.done[k];return '<details class="'+(d?'isdone':'warn')+'"><summary>'+(d?'&#10003; ':'')+a[0]+'</summary><div class="body"><p>'+a[1]+'</p><div class="row"><button class="btn sm" data-adone="'+esc(k)+'" aria-pressed="'+d+'">'+(d?'&#10003; Done (tap to undo)':'Mark done')+'</button></div></div></details>'}).join('');
- $('#spot').innerHTML=P.spot.map(s=>{
-  const match=(DATA.jobs||[]).find(j=>(s[4]&&j.u===s[4])||j.co.toLowerCase()===String(s[0]).toLowerCase());
-  const jv=match?(st.jobs[match.id]||''):'';
-  const statusPill=jv==='applied'?' <span class="pill g">&#10003; applied</span>':jv==='skip'?' <span class="pill">skipped</span>':'';
-  const actions='<div class="row" style="margin-top:8px">'+(s[4]?'<a class="btn sm p" href="'+esc(s[4])+'" target="_blank" rel="noopener">Apply</a>':'')+(match?'<button class="btn sm" data-j="'+esc(match.id)+'" data-v="applied" aria-pressed="'+(jv==='applied')+'">'+(jv==='applied'?'&#10003; Applied':'Applied')+'</button><button class="btn sm" data-j="'+esc(match.id)+'" data-v="skip" aria-pressed="'+(jv==='skip')+'">Skip</button>':'')+'</div>';
-  return card(jv?'isdone':'gold','<b>'+esc(s[0])+'</b> '+(s[2].length<4?pill(+s[2]):'<span class="pill a">'+esc(s[2])+'</span>')+statusPill+'<br><span class="note">'+esc(s[1])+'</span>','<p>'+esc(s[3])+'</p>'+actions);
- }).join('');
- $('#dead').innerHTML=P.dead.map(d=>card('','<b>'+esc(d[0])+'</b> <span class="pill a">'+esc(d[1])+'</span>','')).join('');
- $('#over').innerHTML=P.over.map(o=>card('',esc(o[0]),'<p>'+esc(o[1])+'</p>')).join('');
- updateWheelBadges();
-}
-function renderJobs(){
- const J=DATA.jobs,c={todo:0,applied:0,skip:0,all:J.length};
- J.forEach(j=>{const v=st.jobs[j.id];c[v==='applied'?'applied':v==='skip'?'skip':'todo']++});
- $('#chips').innerHTML=[['todo','To apply'],['applied','Applied'],['skip','Skipped'],['all','All']].map(f=>'<button class="chip" data-f="'+f[0]+'" aria-pressed="'+(filter===f[0])+'">'+f[1]+' '+c[f[0]]+'</button>').join('');
- const q=query.toLowerCase();
- const L=J.filter(j=>{const v=st.jobs[j.id]||'';if(filter==='todo'&&v)return false;if(filter==='applied'&&v!=='applied')return false;if(filter==='skip'&&v!=='skip')return false;return !q||(j.co+' '+j.t).toLowerCase().includes(q)});
- $('#jobcount').textContent=L.length+' '+(L.length===1?'role':'roles')+', best match first. Tap Applied after you submit on the employer site.';
- if(!L.length){$('#joblist').innerHTML='<div class="empty">Nothing here.</div>';updateWheelBadges();return}
- const refD=new Date((P.dataDate||TODAY)+'T12:00:00'),age=j=>j.a?Math.round((refD-new Date(j.a+'T12:00:00'))/864e5):99;
- const almost=j=>(P.almost||[]).find(x=>j.co.toLowerCase().includes(String(x[0]).toLowerCase())&&(!x[1]||j.t.toLowerCase().includes(String(x[1]).toLowerCase())));
- const dline=j=>{const w=j.co.split(/[\s(]/)[0].toLowerCase();return w.length>2&&(P.dead||[]).find(d=>String(d[0]).toLowerCase().includes(w))};
- const jcard=j=>{const v=st.jobs[j.id]||'',al=almost(j),dl=dline(j);
-  const badges=(al?'<span class="pill g">almost done: '+esc(al[2])+'</span>':'')+(age(j)<=2?'<span class="pill t">new</span>':'')+(dl?'<span class="pill r">closes '+esc(dl[1])+'</span>':'')+(/16[- ]?(mo|month)/i.test(j.t)?'<span class="pill a">16-month term</span>':'')+(j.flag?'<span class="pill a">'+esc(j.flag)+'</span>':'');
-  return '<div class="job '+(v==='applied'?'done':v==='skip'?'skip':'')+'"><div class="top"><span class="co">'+esc(j.co)+'</span>'+pill(j.s)+'</div><div class="t">'+esc(j.t)+'</div><div class="row"><span class="pill">'+esc(j.term)+'</span><span class="pill">found '+esc(j.a.slice(5))+'</span>'+badges+'</div><div class="row" style="margin-top:10px"><a class="btn p" href="'+esc(j.u)+'" target="_blank" rel="noopener">Apply</a><button class="btn" data-j="'+esc(j.id)+'" data-v="applied" aria-pressed="'+(v==='applied')+'">'+(v==='applied'?'&#10003; Applied':'Applied')+'</button><button class="btn" data-j="'+esc(j.id)+'" data-v="skip" aria-pressed="'+(v==='skip')+'">'+(v==='skip'?'Skipped':'Skip')+'</button></div></div>'};
- if(filter!=='todo'||q){$('#joblist').innerHTML=L.map(jcard).join('');updateWheelBadges();return}
- const top=L.filter(j=>almost(j)||dline(j)),rest=L.filter(j=>!top.includes(j)),hi=rest.filter(j=>j.s>=65),lo=rest.filter(j=>j.s<65);
- const nw=hi.filter(j=>age(j)<=2),old=hi.filter(j=>age(j)>2);
- $('#joblist').innerHTML=(top.length?'<h2><span>Almost done or closing soon</span><span class="pill a">'+top.length+'</span></h2>'+top.map(jcard).join(''):'')
-  +(nw.length?'<h2><span>New in the last 2 days</span><span class="pill t">'+nw.length+'</span></h2>'+nw.map(jcard).join(''):'')
-  +(old.length?'<h2><span>Everything else, best match first</span><span class="pill">'+old.length+'</span></h2>'+old.map(jcard).join(''):'')
-  +(lo.length?'<details class="lowfold"><summary>Lower match (under 65) &middot; '+lo.length+'</summary><div class="body">'+lo.map(jcard).join('')+'</div></details>':'');
- updateWheelBadges();
-}
-function renderMsgs(){
- const msgs=(DATA.msgs||[]).slice().sort((a,b)=>!!st.msgs[a.id]-!!st.msgs[b.id]);
- const sentCount=msgs.filter(m=>st.msgs[m.id]).length,readyCount=msgs.length-sentCount;
- const mc=$('#msgcount');if(mc)mc.textContent=msgs.length?(readyCount+' ready to send'+(sentCount?' · '+sentCount+' sent':'')):'';
- $('#msglist').innerHTML=msgs.length?msgs.map(m=>{const sent=!!st.msgs[m.id];
-  const searchUrl='https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(m.p+' '+(m.co||''));
-  return '<div class="msg '+(sent?'sent':'')+'"><div class="row" style="justify-content:space-between"><div><b>'+esc(m.p)+'</b> <span class="note">'+esc(m.co)+'</span></div>'+(sent?'<span class="pill g">&#10003; sent</span>':'<span class="pill a">ready</span>')+'</div><div class="note">'+esc(m.role)+'</div><blockquote id="m_'+esc(m.id)+'">'+esc(m.m)+'</blockquote><div class="row"><button class="btn p" data-copy="'+esc(m.id)+'">Copy message</button>'+(m.u?'<a class="btn" href="'+esc(m.u)+'" target="_blank" rel="noopener">Open profile</a>':'<a class="btn" href="'+esc(searchUrl)+'" target="_blank" rel="noopener">Search LinkedIn</a>')+'<button class="btn" data-sent="'+esc(m.id)+'" aria-pressed="'+sent+'">'+(sent?'&#10003; Sent':'Mark sent')+'</button></div></div>'}).join(''):'<div class="empty">No messages ready.</div>';
- $('#hold').innerHTML=P.hold.map(h=>'<div class="note" style="padding:3px 0">'+esc(h)+'</div>').join('');
- updateWheelBadges();
-}
-function renderUpd(){$('#upd').innerHTML=P.upd.map((u,i)=>card('',u[0],u[1],i===0)).join('')}
-const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-const when=ts=>new Date(ts).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
-const mail=(to,subj,body)=>'mailto:'+encodeURIComponent(to||'').replace(/%40/g,'@').replace(/%2B/gi,'+')+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
-/* TickTick sync through the Daybook API (see api/functions/api.mjs). Falls back to a list on this phone. */
-const DEMO=!!window.DAYBOOK_DEMO;
-const API=window.DAYBOOK_API||(DEMO?{url:'demo',key:''}:null);
-/* Demo only: a pretend TickTick account held in memory, answering the same routes as api/functions/api.mjs. */
-const DEMO_TT=(()=>{const d=n=>{const x=new Date();x.setDate(x.getDate()+n);x.setHours(17,0,0,0);return x.toISOString()};return [
- {id:'d1',projectId:'inbox',title:'Email professor about the lab report extension',list:'Inbox',due:d(0)},
- {id:'d2',projectId:'inbox',title:'Print cover letter for Granite Power',list:'Inbox',due:d(-1)},
- {id:'d3',projectId:'school',title:'Problem set 6',list:'School',due:d(2)},
- {id:'d4',projectId:'school',title:'Book a mock interview slot',list:'School',due:null},
- {id:'d5',projectId:'tutor',title:'Prep Gr 12 physics worksheet for Ava',list:'Tutoring',due:d(1)},
- {id:'d6',projectId:'tutor',title:'Send invoices for last month',list:'Tutoring',due:null}]})();
-function demoApi(path,body){const wait=v=>new Promise(r=>setTimeout(()=>r(v),250));
- if(path==='/tasks'&&!body)return wait({connected:true,tasks:DEMO_TT.filter(t=>!t.closed)});
- if(path==='/tasks'){const t={id:'d'+uid(),projectId:'inbox',title:body.title,list:'Inbox',due:null};DEMO_TT.unshift(t);return wait({ok:true,task:t})}
- if(path==='/tasks/complete'){const t=DEMO_TT.find(x=>x.id===body.id);if(t)t.closed=1;return wait({ok:true})}
- if(path==='/tt/login')return Promise.reject(new Error('This demo uses a pretend TickTick account. In the real app this button starts TickTick sign-in (OAuth) and comes back to Daybook.'));
- return Promise.reject(new Error('Not available in the demo'))}
-let TT={state:API?'loading':'off',tasks:[],err:''};
-let openLists={};try{openLists=JSON.parse(localStorage.getItem('daybook_open')||'{}')}catch(e){}
-document.addEventListener('toggle',e=>{const d=e.target;if(!d.classList||!d.classList.contains('tlist'))return;openLists[d.dataset.list]=d.open;try{localStorage.setItem('daybook_open',JSON.stringify(openLists))}catch(x){}},true);
-function api(path,body){if(DEMO)return demoApi(path,body);return fetch(API.url+path,{method:body?'POST':'GET',headers:{'x-daybook-key':API.key,'content-type':'application/json'},body:body?JSON.stringify(body):undefined}).then(r=>r.json().then(j=>{if(!r.ok)throw new Error(j.error||('Error '+r.status));return j}))}
-function loadTT(){if(!API)return;api('/tasks').then(j=>{TT.state=j.connected?'on':'disconnected';TT.tasks=j.tasks||[];TT.err=j.error||'';renderTodos()}).catch(e=>{TT.state='error';TT.err=e.message;renderTodos()})}
-function dueLabel(t){if(!t.due)return '';const d=new Date(t.due),now=new Date(),day=x=>new Date(x.getFullYear(),x.getMonth(),x.getDate()).getTime(),diff=Math.round((day(d)-day(now))/864e5);
- const cls=diff<0?'r':diff===0?'a':'';const txt=diff<0?'overdue':diff===0?'today':diff===1?'tomorrow':d.toLocaleDateString([],{month:'short',day:'numeric'});return '<span class="pill '+cls+'">'+txt+'</span>'}
-function renderTodos(){
- const local=M.todos.slice().sort((a,b)=>(!!a.done-!!b.done)||(b.ts-a.ts));
- const openLocal=local.filter(t=>!t.done).length;
- const localHtml=local.map(t=>'<div class="item'+(t.done?' done':'')+'"><button class="tick" data-td="'+t.id+'" aria-pressed="'+!!t.done+'" aria-label="Done: '+esc(t.t)+'">'+(t.done?'&#10003;':'')+'</button><span class="txt">'+esc(t.t)+'</span><div class="row">'+(TT.state==='on'&&!t.done?'<button class="btn sm" data-tpush="'+t.id+'">Move to TickTick</button>':'')+'<button class="btn sm" data-tdel="'+t.id+'">Delete</button></div></div>').join('');
- let html='',hint='',openCount=openLocal;
- if(TT.state==='on'){
-  openCount+=TT.tasks.length;
-  const groups={};TT.tasks.forEach(t=>{(groups[t.list||'Inbox']=groups[t.list||'Inbox']||[]).push(t)});
-  const names=Object.keys(groups);
-  html=names.length?names.map(n=>{const G=groups[n],late=G.filter(t=>t.due&&new Date(t.due)<new Date(new Date().toDateString())).length;
-   return '<details class="tlist" data-list="'+esc(n)+'"'+(openLists[n]?' open':'')+'><summary>'+esc(n)+' <span class="pill">'+G.length+'</span>'+(late?' <span class="pill r">'+late+' overdue</span>':'')+'</summary><div class="body">'+G.map(t=>'<div class="item"><button class="tick" data-ttdone="'+esc(t.id)+'" data-pid="'+esc(t.projectId)+'" aria-pressed="false" aria-label="Complete: '+esc(t.title)+'"></button><span class="txt">'+esc(t.title)+' '+dueLabel(t)+'</span></div>').join('')+'</div></details>'}).join(''):'<div class="empty">Nothing open in TickTick.</div>';
-  if(local.length)html+='<details class="tlist" data-list="_local"'+(openLists._local?' open':'')+'><summary>On this phone only <span class="pill">'+local.length+'</span></summary><div class="body">'+localHtml+'</div></details>';
-  hint=(DEMO?'Demo: a pretend TickTick account. ':'Synced with TickTick. ')+'New items go to your TickTick Inbox; ticking one completes it there. <button class="btn sm" data-ttreload="1">Refresh</button> <button class="btn sm" data-ttconnect="1">Reconnect TickTick</button>';
- }else{
-  html=local.length?localHtml:'<div class="empty">No to-dos yet.</div>';
-  if(TT.state==='loading')hint='Checking TickTick...';
-  else if(TT.state==='disconnected')hint=(TT.err?esc(TT.err)+' ':'')+'Saved on this phone. <button class="btn sm p" data-ttconnect="1">Connect TickTick</button>';
-  else if(TT.state==='error')hint='Could not reach TickTick ('+esc(TT.err)+'). Showing this phone\'s list. <button class="btn sm" data-ttreload="1">Try again</button>';
-  else hint='Saved on this phone.';
- }
- const th=$('#todoh');if(th)th.innerHTML='<span>To-do</span>'+(openCount?'<span class="pill t">'+openCount+' open</span>':'');
- $('#todos').innerHTML=html;$('#tthint').innerHTML=hint;
- updateWheelBadges();
-}
-function addTodo(v){
- if(TT.state==='on'){const tmp={id:'tmp'+uid(),projectId:'',title:v,list:'Inbox',due:null};TT.tasks.unshift(tmp);renderTodos();
-  return api('/tasks',{title:v}).then(j=>{Object.assign(tmp,j.task);renderTodos()}).catch(e=>{TT.tasks=TT.tasks.filter(x=>x!==tmp);M.todos.push({id:uid(),t:v,ts:Date.now()});saveM();TT.err=e.message;renderTodos();alert('TickTick did not take it, so it is saved on this phone: '+e.message)})}
- M.todos.push({id:uid(),t:v,ts:Date.now()});saveM();renderTodos();return Promise.resolve()}
-const NOTEMAIL={claude:'you+claude@example.com',gemini:'you+gemini@example.com',boardy:'you+boardy@example.com'};
-const AINAME={claude:'Claude',gemini:'Gemini',boardy:'Boardy'};
-function noteEmailAddr(ai){
- const base=(M.set&&M.set.email||'').trim();
- if(!base)return NOTEMAIL[ai];
- const at=base.indexOf('@');
- if(at>0&&!base.slice(0,at).includes('+'))return base.slice(0,at)+'+'+ai+base.slice(at);
- return base;
-}
-function updateEmailHint(){
- const el=$('#setEmailHint');if(!el)return;
- const base=(M.set&&M.set.email||'').trim();
- el.textContent=base?('Notes will address to '+noteEmailAddr('claude')+', '+noteEmailAddr('gemini')+', etc.'):'Leave blank to use the default placeholder addresses (you+claude@example.com).';
-}
-function shareNote(ai,id,btn){const n=(M.notes[ai]||[]).find(x=>x.id===id);if(!n)return;
- const el=document.getElementById('n_'+id),fb=()=>copyEl(el,btn,'Share');
- if(!navigator.share)return fb();
- try{navigator.share({title:'Daybook note for '+AINAME[ai],text:n.t}).catch(e=>{if(!e||e.name!=='AbortError')fb()})}catch(e){if(e.name!=='AbortError')fb()}}
-function renderNotes(ai){const L=M.notes[ai]||[],name=AINAME[ai],to=noteEmailAddr(ai);
- $('#notes-'+ai).innerHTML=L.length?L.slice().reverse().map(n=>'<div class="msg'+(n.done?' sent':'')+'"><div class="note">'+esc(when(n.ts))+'</div><blockquote id="n_'+n.id+'">'+esc(n.t)+'</blockquote><div class="row"><a class="btn sm p" href="'+esc(mail(to,'Daybook note for '+name,n.t))+'">Email</a><button class="btn sm" data-nshare="'+ai+':'+n.id+'">Share</button><button class="btn sm" data-ncopy="'+n.id+'">Copy</button><button class="btn sm" data-ndone="'+ai+':'+n.id+'" aria-pressed="'+!!n.done+'">'+(n.done?'&#10003; Handled':'Handled')+'</button><button class="btn sm" data-ndel="'+ai+':'+n.id+'">Delete</button></div></div>').join(''):'<div class="note">No notes yet.</div>'}
-/* Daily data from the Daybook API (written each morning by tools/refresh-daybook.mjs), used when newer than the copy built into this page. */
-function loadData(){if(!window.DAYBOOK_API)return;fetch(DAYBOOK_API.url+'/data',{headers:{'x-daybook-key':DAYBOOK_API.key}}).then(r=>r.ok?r.json():Promise.reject()).then(j=>{
- if(!j||!j.P||!j.DATA||!(String(j.P.builtAt||'')>String(P.builtAt||'')))return;
- Object.keys(P).forEach(k=>delete P[k]);Object.assign(P,j.P);DATA.jobs=j.DATA.jobs;DATA.msgs=j.DATA.msgs;
- renderToday();renderUpd();all();renderLeads()}).catch(()=>{})}
-const LST=[['new','New leads','New'],['contacted','Contacted','Contacted'],['booked','Students','Student'],['closed','Closed','Closed']];
-let leadFilter='all',leadQuery='',editingLeadNote=null;
-let tutorTab='pipeline',flyerFilter='all',flyerQuery='';
-
-function setTutorTab(tab){
- tutorTab=tab;
- const isPipe=tab==='pipeline';
- const pipeBtn=$('#tutorTabPipe'),flyersBtn=$('#tutorTabFlyers');
- if(pipeBtn)pipeBtn.setAttribute('aria-selected',isPipe?'true':'false');
- if(flyersBtn)flyersBtn.setAttribute('aria-selected',!isPipe?'true':'false');
- const pPipe=$('#panePipeline'),pFly=$('#paneFlyers');
- if(pPipe)pPipe.classList.toggle('on',isPipe);
- if(pFly)pFly.classList.toggle('on',!isPipe);
- if(isPipe)renderLeads();
- else renderFlyers();
-}
-
-function loadLeads(){if(!window.DAYBOOK_API)return;fetch(DAYBOOK_API.url+'/leads',{headers:{'x-daybook-key':DAYBOOK_API.key}}).then(r=>r.ok?r.json():Promise.reject()).then(j=>{LIVE=j.leads||[];try{localStorage.setItem('daybook_live',JSON.stringify(LIVE))}catch(e){}renderLeads();renderFlyers();renderToday()}).catch(()=>{})}
-
-function renderFlyers(){
- const flyers=M.flyers||[],q=flyerQuery.toLowerCase();
- const totalSpots=flyers.length;
- const lowStockSpots=flyers.filter(f=>f.rem<=2);
- const restockCount=lowStockSpots.length;
- const totalPulled=flyers.reduce((s,f)=>s+Math.max(0,f.total-f.rem),0);
- const flyerLeads=leadList().filter(l=>(l.s||'').toLowerCase().includes('flyer')).length;
-
- const badgePipe=$('#badgePipeCount');if(badgePipe)badgePipe.textContent=leadList().length;
- const badgeFlyers=$('#badgeFlyersCount');
- if(badgeFlyers){
-  badgeFlyers.textContent=totalSpots;
-  badgeFlyers.className='pill '+(restockCount?'a':'t');
-  badgeFlyers.title=restockCount?restockCount+' spots need restock':'';
- }
-
- const hero=$('#flyerHero');
- if(hero){
-  hero.innerHTML=`<div class="f-stat ${totalSpots?'good':''}"><b>${totalSpots}</b><span>Spots active</span></div>`
-   +`<div class="f-stat ${restockCount?'alert':''}"><b>${restockCount}</b><span>Need restock</span></div>`
-   +`<div class="f-stat"><b>${totalPulled}</b><span>Tabs pulled</span></div>`
-   +`<div class="f-stat ${flyerLeads?'good':''}"><b>${flyerLeads}</b><span>Flyer leads</span></div>`;
- }
-
- const alertBox=$('#flyerAlerts');
- if(alertBox){
-  if(restockCount>0){
-   alertBox.innerHTML=`<div class="flyer-alert-box">`
-    +`<div><b>⚠️ Restock alert:</b> ${lowStockSpots.map(f=>esc(f.n)+' ('+f.rem+' left)').join(', ')}</div>`
-    +`<button class="btn sm p" type="button" data-frestockall="1">Restock All Low</button>`
-    +`</div>`;
-  } else {
-   alertBox.innerHTML='';
+(function () {
+  var form = document.getElementById('demoCap');
+  var input = document.getElementById('demoCapIn');
+  var log = document.getElementById('demoLog');
+  if (!form || !input || !log) return;
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c];
+    });
   }
- }
-
- const btnAll=$('#flyerFilterAll'),btnRestock=$('#flyerFilterRestock');
- if(btnAll)btnAll.setAttribute('aria-pressed',flyerFilter==='all'?'true':'false');
- if(btnRestock)btnRestock.setAttribute('aria-pressed',flyerFilter==='restock'?'true':'false');
-
- const filtered=flyers.filter(f=>{
-  if(flyerFilter==='restock'&&f.rem>2)return false;
-  if(q&&!(f.n+' '+(f.loc||'')+' '+(f.notes||'')).toLowerCase().includes(q))return false;
-  return true;
- });
-
- const container=$('#flyersList');
- if(!container)return;
- if(!filtered.length){
-  container.innerHTML='<div class="lead-empty">'+(q?'No flyer spots match your search.':'No flyer spots recorded yet. Tap "+ Log flyer spot" above to add your first flyer drop.')+'</div>';
-  return;
- }
-
- const allLeads=leadList();
- container.innerHTML=filtered.map(f=>{
-  const isLow=f.rem<=2;
-  const statusPill=f.rem===0?'<span class="pill r">Empty · Restock</span>':isLow?`<span class="pill a">Low · ${f.rem} left</span>`:'<span class="pill g">Active</span>';
-  
-  let tabElements='';
-  for(let i=0;i<f.total;i++){
-   const taken=i>=f.rem;
-   tabElements+=`<span class="tear-tab ${taken?'taken':(isLow?'low':'active')}" title="${taken?'Tab taken':'Tab '+(i+1)+' ready'}">${taken?'✕':(i+1)}</span>`;
-  }
-
-  const linked=allLeads.filter(l=>(l.s||'').toLowerCase().includes('flyer')&&((l.spot&&l.spot.toLowerCase()===f.n.toLowerCase())||(l.x||'').toLowerCase().includes(f.n.toLowerCase())));
-  const linkedHtml=linked.length
-   ?linked.map(l=>`<div class="flyer-lead-link" data-gotolead="${esc(l.id)}"><span>✦ Generated lead: <b>${esc(l.n)}</b> (${esc(l.d||'Tutee')})</span><span class="pill t" style="text-transform:capitalize">${esc(l.st)} &rsaquo;</span></div>`).join('')
-   :'';
-
-  return `<div class="flyer-card ${isLow?'low-stock':''}" id="fcard_${esc(f.id)}">`
-   +`<div class="flyer-top"><div><h4 class="flyer-name">${esc(f.n)}</h4><div class="flyer-area">${esc(f.loc||'Community board')}</div></div>${statusPill}</div>`
-   +`<div class="flyer-detail-row"><span>Posted: <b>${esc(f.date||'Recent')}</b></span><span>Calls/Inquiries: <b>${f.calls||0}</b></span></div>`
-   +`<div class="tear-strip"><div class="tear-strip-hdr"><span>Tear-offs remaining</span><b>${f.rem} / ${f.total} available</b></div><div class="tear-tabs-row">${tabElements}</div></div>`
-   +(f.notes?`<div class="lead-note-box">${esc(f.notes)}</div>`:'')
-   +linkedHtml
-   +`<div class="flyer-actions">`
-   +`<button class="btn sm p" type="button" data-frestock="${esc(f.id)}">🔄 Restock (${f.total})</button>`
-   +`<button class="btn sm" type="button" data-fpull="${esc(f.id)}" ${f.rem<=0?'disabled':''}>&minus; 1 Tab Pulled</button>`
-   +`<button class="btn sm" type="button" data-fcall="${esc(f.id)}">+ 1 Call (${f.calls||0})</button>`
-   +`<button class="chip" type="button" data-fdel="${esc(f.id)}" style="min-height:36px;padding:4px 9px;font-size:12px;margin-left:auto">Delete</button>`
-   +`</div>`
-   +`</div>`;
- }).join('');
-}
-
-function renderLeads(){
- const allLeads=leadList(),q=leadQuery.toLowerCase();
- const counts={new:0,contacted:0,booked:0,closed:0};
- allLeads.forEach(l=>{counts[l.st]=(counts[l.st]||0)+1});
-
- const badgePipe=$('#badgePipeCount');if(badgePipe)badgePipe.textContent=allLeads.length;
- const badgeFlyers=$('#badgeFlyersCount');
- if(badgeFlyers){
-  badgeFlyers.textContent=(M.flyers||[]).length;
-  const restock=(M.flyers||[]).filter(f=>f.rem<=2).length;
-  badgeFlyers.className='pill '+(restock?'a':'t');
- }
-
- const stBar=$('#leadStages');
- if(stBar)stBar.innerHTML=LST.map(g=>`<button type="button" class="stage-tile" data-lstf="${g[0]}" aria-pressed="${leadFilter===g[0]}"><b>${counts[g[0]]}</b><span>${g[2]}${g[0]==='booked'?'s':''}</span></button>`).join('');
- const allBtn=$('#leadAllBtn');
- if(allBtn)allBtn.setAttribute('aria-pressed',leadFilter==='all'?'true':'false');
-
- const filtered=allLeads.filter(l=>!q||(l.n+' '+(l.d||'')+' '+(l.w||'')+' '+(l.s||'')+' '+(l.x||'')+' '+(l.spot||'')).toLowerCase().includes(q));
-
- const renderCard=l=>{
-  const isEditing=editingLeadNote===l.id;
-  const noteTxt=(l.x||'').trim();
-  const noteArea=isEditing
-   ?`<div><textarea class="lnote" data-lnote="${esc(l.id)}" rows="2" placeholder="Add a note..." aria-label="Notes for ${esc(l.n)}">${esc(l.x)}</textarea><div class="row" style="justify-content:flex-end;margin-bottom:6px"><button type="button" class="btn sm" data-lnoteclose="${esc(l.id)}" style="min-height:30px;padding:3px 9px;font-size:12px">Done</button></div></div>`
-   :`<div class="lead-note-box${noteTxt?'':' empty'}"><button type="button" class="lead-note-edit-btn" data-lnoteopen="${esc(l.id)}">Edit</button>${noteTxt?esc(noteTxt):'Add a note...'}</div>`;
-
-  const isFlyer=(l.s||'').toLowerCase().includes('flyer');
-  const sourcePill=isFlyer
-   ?`<button type="button" class="pill a lead-source-btn" data-gotoflyer="${esc(l.spot||'')}" title="View in Flyer Tracker">📑 Flyer${l.spot?' &middot; '+esc(l.spot):''}</button>`
-   :(l.s?`<span class="pill t">${esc(l.s)}${l.date?' '+esc(String(l.date).slice(5)):''}</span>`:'');
-
-  return `<div class="lead-card" id="leadcard_${esc(l.id)}">`
-   +`<div class="lead-top">`
-   +`<div class="lead-title"><span class="lead-name">${esc(l.n)}</span>${l.d?`<span class="pill">${esc(l.d)}</span>`:''}</div>`
-   +`<div class="row" style="gap:4px;flex-wrap:nowrap;flex-shrink:0">${l.live&&l.at&&(Date.now()-Date.parse(l.at))<864e5?'<span class="pill g">just in</span>':''}${sourcePill}${l.mine?`<button type="button" class="chip" data-ldel="${esc(l.id)}" style="min-height:24px;padding:2px 7px;font-size:11px">Delete</button>`:''}</div>`
-   +`</div>`
-   +(l.w?`<div class="lead-meta">📍 ${esc(l.w)}</div>`:'')
-   +noteArea
-   +`<div class="stage-seg" role="group" aria-label="Stage for ${esc(l.n)}">${LST.map(s=>`<button type="button" data-lead="${esc(l.id)}" data-st="${s[0]}" aria-pressed="${l.st===s[0]}">${s[2]}</button>`).join('')}</div>`
-   +`</div>`;
- };
-
- const container=$('#leads');
- if(!container)return;
- if(!filtered.length){
-  container.innerHTML='<div class="lead-empty">'+(q?'No leads match your search.':'No leads in this stage.')+'</div>';
-  return;
- }
-
- if(leadFilter==='all'){
-  container.innerHTML=LST.map(g=>{
-   const G=filtered.filter(l=>l.st===g[0]);
-   if(!G.length)return '';
-   const pillCls=g[0]==='new'?'t':g[0]==='booked'?'g':g[0]==='contacted'?'a':'';
-   if(g[0]==='closed'&&!q){
-    return `<details class="lowfold" style="margin-top:14px"><summary>Closed / Archived &middot; ${G.length}</summary><div class="body" style="padding:4px 0 0">${G.map(renderCard).join('')}</div></details>`;
-   }
-   return `<div class="lead-group">`
-    +`<div class="lead-group-hdr"><h3><span>${g[1]}</span></h3><span class="pill ${pillCls}">${G.length}</span></div>`
-    +G.map(renderCard).join('')
-    +`</div>`;
-  }).join('');
- }else{
-  const G=filtered.filter(l=>l.st===leadFilter);
-  container.innerHTML=G.length?G.map(renderCard).join(''):'<div class="lead-empty">No leads in this stage.</div>';
- }
-
- updateWheelBadges();
-}
-
-function copyEl(el,btn,label){const txt=el.textContent;
- const fb=()=>{const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent='Selected, press copy'};
- try{navigator.clipboard.writeText(txt).then(()=>{btn.textContent='Copied';setTimeout(()=>btn.textContent=label,1600)},fb)}catch(x){fb()}}
-function mine(){renderTodos();renderNotes('claude');renderNotes('gemini');renderNotes('boardy');renderLeads();renderFlyers();updateEmailHint()}
-$('#todoForm').addEventListener('submit',e=>{e.preventDefault();const v=$('#todoIn').value.trim();if(!v)return;$('#todoIn').value='';addTodo(v)});
-document.querySelectorAll('form[data-ai]').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();const ta=f.querySelector('textarea'),v=ta.value.trim();if(!v)return;const ai=f.dataset.ai;(M.notes[ai]=M.notes[ai]||[]).push({id:uid(),t:v,ts:Date.now()});ta.value='';saveM();renderNotes(ai)}));
-
-const leadAddWrap=$('#leadAddWrap'),leadAddToggle=$('#leadAddToggle'),leadAddCancel=$('#leadAddCancel'),leadQEl=$('#leadQ'),leadAllBtn=$('#leadAllBtn');
-function toggleLeadAdd(open){
- const show=open!==undefined?open:leadAddWrap.hidden;
- leadAddWrap.hidden=!show;
- if(leadAddToggle)leadAddToggle.setAttribute('aria-expanded',show?'true':'false');
- if(show){const first=leadAddWrap.querySelector('input[name="n"]');if(first)first.focus()}
-}
-if(leadAddToggle)leadAddToggle.addEventListener('click',()=>toggleLeadAdd());
-if(leadAddCancel)leadAddCancel.addEventListener('click',()=>toggleLeadAdd(false));
-if(leadAllBtn)leadAllBtn.addEventListener('click',()=>{leadFilter='all';renderLeads()});
-if(leadQEl)leadQEl.addEventListener('input',e=>{leadQuery=e.target.value;renderLeads()});
-$('#leadForm').addEventListener('submit',e=>{e.preventDefault();const f=e.target,g=k=>f.elements[k].value.trim();if(!g('n'))return;M.myLeads.push({id:'m_'+uid(),n:g('n'),d:g('d'),w:g('w'),s:g('s'),x:g('x'),mine:1});f.reset();toggleLeadAdd(false);saveM();renderLeads();renderToday()});
-
-/* Flyer form & filter controls */
-const flyerAddWrap=$('#flyerAddWrap'),flyerAddToggle=$('#flyerAddToggle'),flyerAddCancel=$('#flyerAddCancel'),flyerQEl=$('#flyerQ');
-function toggleFlyerAdd(open){
- if(!flyerAddWrap)return;
- const show=open!==undefined?open:flyerAddWrap.hidden;
- flyerAddWrap.hidden=!show;
- if(flyerAddToggle)flyerAddToggle.setAttribute('aria-expanded',show?'true':'false');
- if(show){const first=flyerAddWrap.querySelector('input[name="n"]');if(first)first.focus()}
-}
-if(flyerAddToggle)flyerAddToggle.addEventListener('click',()=>toggleFlyerAdd());
-if(flyerAddCancel)flyerAddCancel.addEventListener('click',()=>toggleFlyerAdd(false));
-if(flyerQEl)flyerQEl.addEventListener('input',e=>{flyerQuery=e.target.value;renderFlyers()});
-const flyerForm=$('#flyerForm');
-if(flyerForm)flyerForm.addEventListener('submit',e=>{
- e.preventDefault();
- const f=e.target,g=k=>f.elements[k].value.trim();
- if(!g('n'))return;
- const tot=Math.max(1,parseInt(g('total'),10)||10);
- M.flyers.unshift({id:'f_'+uid(),n:g('n'),loc:g('loc'),date:g('date')||TODAY,total:tot,rem:tot,calls:0,notes:g('notes')});
- f.reset();toggleFlyerAdd(false);saveM();renderFlyers();renderToday();
-});
-
-document.addEventListener('input',e=>{const t=e.target;
- if(t.dataset&&t.dataset.lnote){const o=M.leads[t.dataset.lnote]=M.leads[t.dataset.lnote]||{};o.x=t.value;saveM()}
- if(t.id==='setEmail'){M.set.email=t.value.trim();saveM();updateEmailHint();renderNotes('claude');renderNotes('gemini');renderNotes('boardy')}});
-document.addEventListener('change',e=>{const t=e.target;
- if(t.dataset&&t.dataset.lnote){const o=M.leads[t.dataset.lnote]=M.leads[t.dataset.lnote]||{};o.x=t.value;saveM()}
- if(t.id==='setEmail'){M.set.email=t.value.trim();saveM();mine()}});
-
-document.addEventListener('click',e=>{
- const b=e.target.closest('button, [data-gotoflyer], [data-gotolead]');if(!b)return;const d=b.dataset;
- if(d.ttab){setTutorTab(d.ttab)}
- else if(d.gotoflyer!==undefined){setTutorTab('flyers');if(d.gotoflyer){flyerQuery=d.gotoflyer;const fq=$('#flyerQ');if(fq)fq.value=d.gotoflyer;renderFlyers()}}
- else if(d.gotolead){setTutorTab('pipeline');leadFilter='all';renderLeads();const el=document.getElementById('leadcard_'+d.gotolead);if(el)el.scrollIntoView({behavior:'smooth',block:'center'})}
- else if(d.frestockall){(M.flyers||[]).forEach(f=>{if(f.rem<=2){f.rem=f.total;f.date=TODAY}});saveM();renderFlyers();renderToday()}
- else if(d.frestock){const f=(M.flyers||[]).find(x=>x.id===d.frestock);if(f){f.rem=f.total;f.date=TODAY;saveM();renderFlyers();renderToday()}}
- else if(d.fpull){const f=(M.flyers||[]).find(x=>x.id===d.fpull);if(f&&f.rem>0){f.rem--;saveM();renderFlyers();renderToday()}}
- else if(d.fcall){const f=(M.flyers||[]).find(x=>x.id===d.fcall);if(f){f.calls=(f.calls||0)+1;saveM();renderFlyers()}}
- else if(d.fdel){M.flyers=(M.flyers||[]).filter(x=>x.id!==d.fdel);saveM();renderFlyers();renderToday()}
- else if(d.ff){flyerFilter=d.ff;renderFlyers()}
- else if(d.ttconnect){b.textContent='Opening TickTick...';api('/tt/login').then(j=>{location.href=j.url}).catch(x=>{b.textContent='Connect TickTick';alert(x.message)})}
- else if(d.ttreload){TT.state='loading';renderTodos();loadTT()}
- else if(d.ttdone){const t=TT.tasks.find(x=>x.id===d.ttdone);if(!t||!t.projectId)return;TT.tasks=TT.tasks.filter(x=>x!==t);renderTodos();
-  api('/tasks/complete',{id:t.id,projectId:t.projectId}).catch(x=>{TT.tasks.unshift(t);renderTodos();alert('Could not complete it in TickTick: '+x.message)})}
- else if(d.tpush){const t=M.todos.find(x=>x.id===d.tpush);if(t){M.todos=M.todos.filter(x=>x!==t);saveM();addTodo(t.t)}}
- else if(d.td){const t=M.todos.find(x=>x.id===d.td);if(t){t.done=!t.done;saveM();renderTodos()}}
- else if(d.tdel){M.todos=M.todos.filter(x=>x.id!==d.tdel);saveM();renderTodos()}
- else if(d.nshare){const p=d.nshare.split(':');shareNote(p[0],p[1],b)}
- else if(d.ncopy){copyEl(document.getElementById('n_'+d.ncopy),b,'Copy')}
- else if(d.ndone||d.ndel){const k=(d.ndone||d.ndel).split(':'),L=M.notes[k[0]]||[];if(d.ndel)M.notes[k[0]]=L.filter(x=>x.id!==k[1]);else{const n=L.find(x=>x.id===k[1]);if(n)n.done=!n.done}saveM();renderNotes(k[0])}
- else if(d.lstf){leadFilter=leadFilter===d.lstf?'all':d.lstf;renderLeads()}
- else if(d.lnoteopen){editingLeadNote=d.lnoteopen;renderLeads();const ta=document.querySelector('textarea[data-lnote="'+CSS.escape(d.lnoteopen)+'"]');if(ta)ta.focus()}
- else if(d.lnoteclose){editingLeadNote=null;renderLeads()}
- else if(d.lead){const o=M.leads[d.lead]=M.leads[d.lead]||{};o.st=d.st;saveM();renderLeads();renderToday()}
- else if(d.fakelead){const F=[['Zara','Gr 10 Science','Remote, Monday evenings'],['Liam','Gr 12 Data Management','In person, Saturdays'],['Sofia','Gr 11 Physics','Remote OK, after school'],['Owen','Gr 9 Math','In person, weekday afternoons']],f=F[LIVE.length%F.length];
-  LIVE.unshift({id:'live_'+uid(),n:f[0],d:f[1],w:f[2],s:'Bark',x:'Arrived by email from Gemini, relayed by Apps Script to /api/leads.',date:TODAY,at:new Date().toISOString()});
-  try{localStorage.setItem('daybook_live',JSON.stringify(LIVE))}catch(x){}
-  if(leadFilter!=='all'&&leadFilter!=='new')leadFilter='new';
-  renderLeads();renderToday();b.textContent='Added to New ('+f[0]+') · Tap for another'}
- else if(d.ldel){M.myLeads=M.myLeads.filter(x=>x.id!==d.ldel);delete M.leads[d.ldel];saveM();renderLeads();renderToday()}
-});
-$('#setEmail').value=M.set.email||'';
-
-/* Theme toggle (Auto / Light / Dark) */
-(function(){
- const btn=$('#themeBtn'),meta=document.querySelector('meta[name="theme-color"]');
- let th='';try{th=localStorage.getItem('daybook_theme')||''}catch(e){}
- function applyTheme(v){
-  th=v;
-  if(v==='dark'||v==='light')document.documentElement.setAttribute('data-theme',v);
-  else document.documentElement.removeAttribute('data-theme');
-  const isDark=v==='dark'||(!v&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches);
-  if(meta)meta.setAttribute('content',isDark?'#0d1514':'#eef2f1');
-  if(btn)btn.textContent=v==='dark'?'Dark':v==='light'?'Light':'Auto';
- }
- applyTheme(th);
- if(btn)btn.addEventListener('click',()=>{
-  const next=th===''?'dark':th==='dark'?'light':'';
-  try{if(next)localStorage.setItem('daybook_theme',next);else localStorage.removeItem('daybook_theme')}catch(e){}
-  applyTheme(next);
- });
-})();
-
-/* iPhone / iOS virtual keyboard & viewport protection:
-   Tuck the bottom wheel when an input/textarea is focused so it never juts upwards above the software keyboard. */
-(function(){
- const isField=el=>el&&(el.tagName==='INPUT'||el.tagName==='TEXTAREA'||el.isContentEditable);
- document.addEventListener('focusin',e=>{if(isField(e.target)){document.body.classList.add('kb-open');setWheelRaised(false)}});
- document.addEventListener('focusout',()=>{setTimeout(()=>{if(!isField(document.activeElement))document.body.classList.remove('kb-open')},80)});
- if(window.visualViewport){
-  const baseH=window.visualViewport.height;
-  window.visualViewport.addEventListener('resize',()=>{
-   const shrunk=window.visualViewport.height<baseH-110;
-   document.body.classList.toggle('kb-open',shrunk||isField(document.activeElement));
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var raw = input.value.trim();
+    if (!raw) return;
+    input.value = '';
+    var m = raw.match(/^(log|note)[:\s]\s*(.+)$/i);
+    var kind = m ? m[1].toLowerCase() : 'task';
+    var text = m ? m[2] : raw;
+    var now = new Date();
+    var hh = String(now.getHours()).padStart(2, '0');
+    var mm = String(now.getMinutes()).padStart(2, '0');
+    var row = document.createElement('div');
+    row.className = 'slog-row';
+    row.innerHTML = '<time>' + hh + ':' + mm + '</time><span class="k">' + esc(kind) + '</span><span>' + esc(text) + '</span>';
+    log.prepend(row);
+    while (log.children.length > 5) log.removeChild(log.lastElementChild);
   });
- }
 })();
-
-/* Rotating Circle Bottom Navigation:
-   - Raise/lower by pulling up/down or tapping the handle/hub.
-   - Spin the wheel to move any tab into the top 12-o'clock active dock.
-   - Tap "Move tabs" (or long-press a tab on the raised wheel) to rearrange where tabs live on the circle! */
-const DEFAULT_TABS=['today','jobs','messages','tutoring','updates'];
-const TAB_META={
- today:{title:'Today',sub:()=>{const s=liveStats();return s.openAttn?s.openAttn+' need attention':'All caught up'}},
- jobs:{title:'Jobs',sub:()=>{const s=liveStats();return s.openJobs+' to apply'}},
- messages:{title:'Messages',sub:()=>{const s=liveStats();return s.openMsgs+' ready to send'}},
- tutoring:{title:'Tutoring',sub:()=>{const s=liveStats();return s.newLeads+' new leads'+(s.flyerRestocks?' · '+s.flyerRestocks+' restock':'')}},
- updates:{title:'Updates',sub:()=>((P.upd||[]).length+' reports')}
-};
-let tabOrder=DEFAULT_TABS.slice();
-try{
- const savedOrder=JSON.parse(localStorage.getItem('daybook_tab_order')||'null');
- if(Array.isArray(savedOrder)&&savedOrder.length===DEFAULT_TABS.length&&DEFAULT_TABS.every(t=>savedOrder.includes(t)))tabOrder=savedOrder;
-}catch(e){}
-function saveTabOrder(){try{localStorage.setItem('daybook_tab_order',JSON.stringify(tabOrder))}catch(e){}}
-
-const wheelNav=$('#wheelNav'),wheelBackdrop=$('#wheelBackdrop'),wheelHandle=$('#wheelHandle'),wheelHandleTxt=$('#wheelHandleTxt'),wheelShell=$('#wheelShell'),wheelHubTitle=$('#wheelHubTitle'),wheelHubSub=$('#wheelHubSub'),wheelArrangeBtn=$('#wheelArrangeBtn'),wheelLowerBtn=$('#wheelLowerBtn');
-let wheelRot=0,wheelRaised=false,wheelArrange=false,movingTab=null;
-
-function currentTabId(){
- const v=(location.hash||'#today').slice(1);
- return DEFAULT_TABS.includes(v)?v:'today';
-}
-function slotAngleForIndex(idx){return idx*72}
-function topSlotIndexFromRot(rot){
- const raw=Math.round((-rot)/72);
- return ((raw%5)+5)%5;
-}
-function tabAtTop(rot){return tabOrder[topSlotIndexFromRot(rot)]||'today'}
-function updateWheelDOM(previewTab){
- const activeId=previewTab||currentTabId();
- document.querySelectorAll('.wheel-item').forEach(el=>{
-  const id=el.dataset.v,idx=tabOrder.indexOf(id);
-  const angle=slotAngleForIndex(idx)+wheelRot;
-  el.style.setProperty('--angle',angle);
-  el.classList.toggle('moving-src',wheelArrange&&movingTab===id);
-  el.classList.toggle('slot-preview',!!previewTab&&previewTab===id);
-  if(id===currentTabId())el.setAttribute('aria-current','page');
-  else el.removeAttribute('aria-current');
- });
- const meta=TAB_META[activeId]||TAB_META.today;
- if(wheelHubTitle)wheelHubTitle.textContent=wheelArrange?(movingTab?'Tap target slot':'Move tabs'):meta.title;
- if(wheelHubSub)wheelHubSub.textContent=wheelArrange?(movingTab?('Moving '+TAB_META[movingTab].title):'Tap 2 tabs or drag'):meta.sub();
- if(wheelHandleTxt)wheelHandleTxt.textContent=wheelRaised?(wheelArrange?'Moving tabs':'Spin or lower'):(TAB_META[currentTabId()].title+' · Raise');
-}
-function rotateWheelToTab(id){
- const idx=tabOrder.indexOf(id);if(idx<0)return;
- const desired=-idx*72;
- const delta=((desired-wheelRot)%360+540)%360-180;
- wheelRot+=delta;
- updateWheelDOM();
-}
-function setWheelRaised(on){
- wheelRaised=!!on;
- if(!wheelRaised){wheelArrange=false;movingTab=null;if(wheelArrangeBtn){wheelArrangeBtn.classList.remove('on');wheelArrangeBtn.setAttribute('aria-pressed','false')}}
- if(wheelNav){
-  wheelNav.setAttribute('data-raised',wheelRaised?'true':'false');
-  wheelNav.setAttribute('data-arrange',wheelArrange?'true':'false');
-  wheelNav.style.setProperty('--drag-y','0px');
- }
- if(wheelHandle)wheelHandle.setAttribute('aria-expanded',wheelRaised?'true':'false');
- if(wheelBackdrop)wheelBackdrop.classList.toggle('on',wheelRaised);
- updateWheelDOM();
-}
-function setWheelArrange(on){
- wheelArrange=!!on;movingTab=null;
- if(wheelNav)wheelNav.setAttribute('data-arrange',wheelArrange?'true':'false');
- if(wheelArrangeBtn){wheelArrangeBtn.classList.toggle('on',wheelArrange);wheelArrangeBtn.setAttribute('aria-pressed',wheelArrange?'true':'false')}
- updateWheelDOM();
-}
-function updateWheelBadges(){
- const S=liveStats();
- const counts={today:S.openAttn,jobs:S.openJobs,messages:S.openMsgs,tutoring:S.newLeads,updates:0};
- document.querySelectorAll('[data-wb]').forEach(b=>{
-  const n=counts[b.dataset.wb]||0;
-  if(n>0){b.textContent=n;b.hidden=false}else{b.textContent='';b.hidden=true}
- });
- updateWheelDOM();
-}
-function activateTab(id){
- if(!DEFAULT_TABS.includes(id))return;
- rotateWheelToTab(id);
- if(location.hash==='#'+id)route();
- else location.hash=id;
-}
-
-if(wheelArrangeBtn)wheelArrangeBtn.addEventListener('click',e=>{e.stopPropagation();setWheelArrange(!wheelArrange)});
-if(wheelLowerBtn)wheelLowerBtn.addEventListener('click',e=>{e.stopPropagation();setWheelRaised(false)});
-if(wheelBackdrop)wheelBackdrop.addEventListener('click',()=>setWheelRaised(false));
-const resetWheelBtn=$('#resetWheelBtn');
-if(resetWheelBtn)resetWheelBtn.addEventListener('click',()=>{
- tabOrder=DEFAULT_TABS.slice();saveTabOrder();rotateWheelToTab(currentTabId());
- resetWheelBtn.textContent='Wheel order reset';setTimeout(()=>resetWheelBtn.textContent='Reset wheel tab order',1500);
-});
-
-/* Unified Pointer Gesture Controller for Raising, Spinning, and Moving Tabs on the Circle */
-(function(){
- if(!wheelNav||!wheelShell)return;
- let pId=null,startX=0,startY=0,startRot=0,startRaised=false,lastAngle=null,moved=false,gestureMode='',clickedItem=null,longPressTimer=null;
- function pointerAngle(cx,cy,x,y){return Math.atan2(x-cx,-(y-cy))*180/Math.PI}
- function shellCenter(){const r=wheelShell.getBoundingClientRect();return {cx:r.left+r.width/2,cy:r.top+r.height/2}}
-
- wheelNav.addEventListener('pointerdown',e=>{
-  if(e.target.closest('.wheel-hub-btns'))return;
-  pId=e.pointerId;startX=e.clientX;startY=e.clientY;startRot=wheelRot;startRaised=wheelRaised;
-  moved=false;gestureMode='';lastAngle=null;
-  clickedItem=e.target.closest('.wheel-item');
-  clearTimeout(longPressTimer);
-  if(wheelRaised&&clickedItem&&!wheelArrange){
-   longPressTimer=setTimeout(()=>{
-    if(!moved){setWheelArrange(true);movingTab=clickedItem.dataset.v;updateWheelDOM()}
-   },420);
-  }
-  try{wheelNav.setPointerCapture(pId)}catch(err){}
- });
-
- wheelNav.addEventListener('pointermove',e=>{
-  if(e.pointerId!==pId)return;
-  const dx=e.clientX-startX,dy=e.clientY-startY,dist=Math.hypot(dx,dy);
-  if(dist>7){moved=true;clearTimeout(longPressTimer)}
-  if(!moved)return;
-
-  wheelNav.classList.add('dragging');
-  if(!startRaised&&!wheelRaised){
-   /* When lowered: pulling upwards raises the circle; dragging horizontally spins it; pulling up + moving spins in one fluid motion! */
-   if(dy<-28){
-    setWheelRaised(true);
-    startRot=wheelRot;
-    const {cx,cy}=shellCenter();
-    lastAngle=pointerAngle(cx,cy,e.clientX,e.clientY);
-    gestureMode='spin';
-    return;
-   }
-   if(Math.abs(dy)>Math.abs(dx)&&dy<0){
-    wheelNav.style.setProperty('--drag-y',Math.max(-195,dy)+'px');
-    return;
-   }
-   gestureMode='horiz';
-   wheelRot=startRot+dx*0.55;
-   updateWheelDOM(tabAtTop(wheelRot));
-   return;
-  }
-
-  /* When raised */
-  if(!gestureMode){
-   const onHandleOrHub=!!(e.target.closest('#wheelHandle')||e.target.closest('#wheelHub'));
-   if(onHandleOrHub&&dy>18&&Math.abs(dy)>Math.abs(dx)*1.2)gestureMode='lower';
-   else gestureMode=wheelArrange&&clickedItem?'arrange-drag':'spin';
-   const {cx,cy}=shellCenter();
-   lastAngle=pointerAngle(cx,cy,e.clientX,e.clientY);
-  }
-
-  if(gestureMode==='lower'){
-   wheelNav.style.setProperty('--drag-y',Math.max(0,Math.min(200,dy))+'px');
-   return;
-  }
-
-  const {cx,cy}=shellCenter();
-  const curAngle=pointerAngle(cx,cy,e.clientX,e.clientY);
-  if(gestureMode==='arrange-drag'&&clickedItem){
-   /* Dragging a tab around the circle in Move Tabs mode swaps it into whichever slot the thumb is over */
-   const rel=((curAngle-wheelRot)%360+360)%360;
-   const targetSlot=Math.round(rel/72)%5;
-   const srcTab=clickedItem.dataset.v,srcSlot=tabOrder.indexOf(srcTab);
-   if(srcSlot>=0&&targetSlot!==srcSlot){
-    const other=tabOrder[targetSlot];
-    tabOrder[targetSlot]=srcTab;tabOrder[srcSlot]=other;
-    saveTabOrder();
-   }
-   movingTab=srcTab;
-   updateWheelDOM();
-   return;
-  }
-
-  /* Spin mode: track polar angle around the center of the wheel */
-  if(lastAngle!==null){
-   let dA=curAngle-lastAngle;
-   if(dA>180)dA-=360;
-   if(dA<-180)dA+=360;
-   wheelRot+=dA;
-  }
-  lastAngle=curAngle;
-  updateWheelDOM(tabAtTop(wheelRot));
- });
-
- function endPointer(e){
-  if(e.pointerId!==pId)return;
-  clearTimeout(longPressTimer);
-  wheelNav.classList.remove('dragging');
-  wheelNav.style.setProperty('--drag-y','0px');
-  const dx=e.clientX-startX,dy=e.clientY-startY;
-
-  if(!moved){
-   /* Tap without drag */
-   if(e.target.closest('#wheelHandle')){
-    setWheelRaised(!wheelRaised);
-   }else if(!wheelRaised){
-    /* Tapping the lowered crown raises the rotating circle so you can spin or pick tabs */
-    setWheelRaised(true);
-   }else if(wheelArrange&&clickedItem){
-    const id=clickedItem.dataset.v;
-    if(!movingTab){movingTab=id;updateWheelDOM()}
-    else if(movingTab===id){movingTab=null;updateWheelDOM()}
-    else{
-     const i1=tabOrder.indexOf(movingTab),i2=tabOrder.indexOf(id);
-     if(i1>=0&&i2>=0){tabOrder[i1]=id;tabOrder[i2]=movingTab;saveTabOrder()}
-     movingTab=null;
-     activateTab(id);
-    }
-   }else if(clickedItem){
-    const id=clickedItem.dataset.v;
-    if(id===currentTabId()&&topSlotIndexFromRot(wheelRot)===tabOrder.indexOf(id)){
-     setWheelRaised(false);
-    }else{
-     activateTab(id);
-    }
-   }else if(e.target.closest('#wheelHub')){
-    setWheelRaised(false);
-   }
-  }else{
-   /* End of a drag gesture */
-   if(gestureMode==='lower'&&dy>45){
-    setWheelRaised(false);
-   }else if(!wheelRaised&&dy<-35){
-    setWheelRaised(true);
-   }else if(gestureMode==='arrange-drag'&&movingTab){
-    const movedId=movingTab;movingTab=null;
-    if(topSlotIndexFromRot(wheelRot)===tabOrder.indexOf(movedId))activateTab(movedId);
-    else updateWheelDOM();
-   }else{
-    /* Snap wheel rotation to the nearest tab at 12 o'clock and switch to it */
-    const snapTab=tabAtTop(wheelRot);
-    activateTab(snapTab);
-   }
-  }
-  pId=null;clickedItem=null;gestureMode='';
- }
- wheelNav.addEventListener('pointerup',endPointer);
- wheelNav.addEventListener('pointercancel',endPointer);
- /* Prevent default click navigation on .wheel-item since pointerup handles it cleanly */
- wheelNav.addEventListener('click',e=>{if(e.target.closest('.wheel-item'))e.preventDefault()});
- /* Mouse wheel / trackpad support on the dial */
- wheelNav.addEventListener('wheel',e=>{
-  e.preventDefault();
-  const dir=(e.deltaY||e.deltaX)>0?1:-1;
-  const curIdx=tabOrder.indexOf(currentTabId());
-  const nextIdx=(curIdx+dir+5)%5;
-  activateTab(tabOrder[nextIdx]);
- },{passive:false});
- /* Keyboard navigation for accessibility */
- document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&wheelRaised){setWheelRaised(false);return}
-  if(!wheelNav.contains(document.activeElement))return;
-  if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
-   e.preventDefault();
-   const dir=e.key==='ArrowRight'?1:-1;
-   const curIdx=tabOrder.indexOf(currentTabId());
-   activateTab(tabOrder[(curIdx+dir+5)%5]);
-  }else if(e.key==='ArrowUp'&&!wheelRaised){e.preventDefault();setWheelRaised(true)}
-  else if(e.key==='ArrowDown'&&wheelRaised){e.preventDefault();setWheelRaised(false)}
- });
-})();
-
-function route(){const id=currentTabId();
- document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+id));
- rotateWheelToTab(id);window.scrollTo(0,0)}
-function all(){renderJobs();renderMsgs();sync()}
-document.addEventListener('click',e=>{
- const t=e.target.closest('button');if(!t)return;
- if(t.dataset.f){filter=t.dataset.f;renderJobs();return}
- if(t.dataset.j){const id=t.dataset.j,v=t.dataset.v;if(st.jobs[id]===v)delete st.jobs[id];else st.jobs[id]=v;save();renderJobs();renderToday();return}
- if(t.dataset.adone){const k=t.dataset.adone;if(st.done[k])delete st.done[k];else st.done[k]=1;save();renderToday();return}
- if(t.dataset.sent){const id=t.dataset.sent;if(st.msgs[id])delete st.msgs[id];else st.msgs[id]=1;save();renderMsgs();renderToday();return}
- if(t.dataset.copy){copyEl(document.getElementById('m_'+t.dataset.copy),t,'Copy message')}
-});
-$('#q').addEventListener('input',e=>{query=e.target.value;renderJobs()});
-window.addEventListener('hashchange',route);
-/* Demo: the About sheet. Opens on the first visit, and from the header button. */
-const AB=$('#about');
-function renderWidget(){const S=liveStats(),t=DEMO_TT.filter(x=>!x.closed),tod=isoDay(new Date()),dd=x=>x.due?isoDay(new Date(x.due)):'';
- const due=t.filter(x=>dd(x)&&dd(x)<=tod);
- $('#wPrev').innerHTML='<div class="wd">Daybook · '+esc(P.date.split(',')[0])+'</div><div class="wn"><div><b>'+esc(S.openJobs)+'</b>roles</div><div><b>'+t.length+'</b>to-dos</div><div><b>'+esc(S.openMsgs)+'</b>messages</div><div><b>'+esc(S.newLeads)+'</b>leads</div></div><div class="wx">'+(due.length?esc(due.length+' due or overdue: '+due[0].title):'Next: '+esc(P.dead[0][0]+', '+P.dead[0][1]))+'</div>'}
-function openAbout(){renderWidget();if(AB.showModal&&!AB.open)AB.showModal();else AB.setAttribute('open','');AB.scrollTop=0;const s=AB.querySelector('.ab-top');if(s)s.parentNode.scrollTop=0}
-function closeAbout(){if(AB.close)AB.close();else AB.removeAttribute('open');try{localStorage.setItem('daybook_demo_seen','1')}catch(e){}}
-$('#aboutBtn').addEventListener('click',openAbout);
-AB.addEventListener('click',e=>{if(e.target===AB){closeAbout();return}const b=e.target.closest('button');if(!b)return;
- if(b.dataset.abclose)closeAbout();else if(b.dataset.abgo){closeAbout();if(location.hash==='#'+b.dataset.abgo)route();else location.hash=b.dataset.abgo}});
-AB.addEventListener('close',()=>{try{localStorage.setItem('daybook_demo_seen','1')}catch(e){}});
-/* Demo shim: dates in the sample data are "days ago" numbers; turn them into real dates so the demo always looks fresh. */
-(function(){const day=n=>{const d=new Date();d.setDate(d.getDate()-n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
- const now=new Date(),y=now.getFullYear(),built=new Date(now);built.setHours(Math.min(now.getHours(),8),Math.min(now.getMinutes(),30),0,0);
- DATA.jobs.forEach(j=>{j.a=day(j.a)});P.leads.forEach(l=>{l.date=day(l.date)});
- P.date=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+' · Winter / Summer '+(y+1);
- P.dataDate=P.textDate=day(0);P.builtAt=built.toISOString();P.updated='Sample data, rebuilt each time the demo opens'})();
-renderToday();renderUpd();all();mine();route();loadTT();loadData();loadState();loadLeads();
-let seen=/[?&]about=0/.test(location.search);try{seen=seen||!!localStorage.getItem('daybook_demo_seen')}catch(e){}if(!seen)openAbout();
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible')return;if(TT.state==='on')loadTT();loadData();loadState();loadLeads()});
-;
 </script>
-</body></html>
+</body>
+</html>
