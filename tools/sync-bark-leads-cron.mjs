@@ -145,16 +145,14 @@ Strictly apply these qualification rules:
 - BORDERLINE (STILL INCLUDE):
   * K-12 Math/Science bundled with non-STEM (e.g. English, reading, writing).
   * First-year / intro post-secondary STEM (e.g. First-Year Calculus, Intro Statistics).
-  * Marginal commute locations if in-person is preferred (e.g. Bradford).
 - DISQUALIFIED (DROP COMPLETELY):
   * Non-STEM only (English, French, Spanish, History, Geography, vocal/music, aviation).
   * Upper-year specialized university courses (e.g. 3rd-year Spectroscopy).
 
-2. LOCATION & DELIVERY RULES:
-- Remote / Online: ANY Canadian location qualifies if the client accepts or prefers remote/video call tutoring.
-- In-Person Only: Qualifies ONLY within the local GTA corridor:
-  Mississauga, Oakville, Brampton, Vaughan, Toronto / North York / Etobicoke.
-- Strictly in-person requests OUTSIDE this zone (e.g. Hamilton, Milton, Oshawa, Guelph, London, Stratford, King City, Peterborough, Stirling-Rawdon) MUST BE DISQUALIFIED.
+2. LOCATION & DELIVERY RULES (REMOTE ONLY):
+- WE ARE ONLY ACCEPTING REMOTE / ONLINE CLIENTS. No in-person tutoring is offered.
+- QUALIFIED: ANY Canadian location qualifies ONLY IF the client accepts or prefers online / remote / video call tutoring (e.g. "Would you consider online or remote tutoring?: Yes").
+- DISQUALIFIED (DROP COMPLETELY): ANY lead that requests in-person only OR answers "No" to "Would you consider online or remote tutoring?" MUST BE DISQUALIFIED, regardless of city (even in Mississauga, Oakville, Brampton, Vaughan, or Toronto).
 
 3. PRIVACY & SAFETY GUARDRAILS:
 - NEVER include last names, phone numbers, email addresses, or street addresses.
@@ -165,7 +163,7 @@ Strictly apply these qualification rules:
 - "id": Stable lowercase string with underscores: "bark_" + first_name.toLowerCase() + "_" + short_subject_tag (e.g. "bark_rita_gr11_u_bio", "bark_ha_gr12_adv_func", "bark_alina_uni_stats").
 - "n": First name only.
 - "d": Clean grade & subject title (e.g. "Gr 12 Advanced Functions", "University Statistics", "Gr 10 Math & Science").
-- "w": City/Region, delivery format, and times (e.g. "Mississauga (L5M), in-person, late afternoon", "Pickering (L1V), remote preferred").
+- "w": City/Region, delivery format, and times (e.g. "Mississauga (L5M), remote, late afternoon", "Pickering (L1V), remote preferred").
 - "s": "Bark"
 - "x": Note qualification + credits + budget. Must start with "Qualified." or "Borderline: [reason]". (e.g. "Qualified. 3 credits to unlock. Budget: $35.00-$50.00/hour." or "Borderline: Intro post-secondary STEM. 5 credits to unlock.")
 - "date": YYYY-MM-DD
