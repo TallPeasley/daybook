@@ -96,6 +96,18 @@ textarea:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .tutor-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 10px}
 .tutor-bar input[type=search]{flex:1 1 160px;padding:9px 11px;min-height:40px}
 
+/* Mobile-First Horizontally Scrollable Filter Bar */
+.filter-scroll-wrapper{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:4px 16px 12px 16px;margin:0 -16px}
+.filter-scroll-wrapper::-webkit-scrollbar{display:none}
+.filter-pills{display:inline-flex;gap:8px;white-space:nowrap}
+.filter-pill{appearance:none;border:1px solid var(--line);background-color:var(--surface);color:var(--muted);font-family:inherit;font-size:13px;font-weight:500;padding:6px 14px;border-radius:9999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s ease-in-out}
+.filter-pill:hover{background-color:var(--line);color:var(--ink)}
+.filter-pill.active{background-color:var(--ink);color:var(--surface);border-color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.filter-pill-alert.active{background-color:#dc2626;border-color:#dc2626;color:#fff}
+.pill-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.dot-new{background-color:#0ea5e9}
+.card-filtered-out{display:none!important}
+
 /* Lead Cards & Groups in Pipeline (Fluid vertical layout, no horizontal side-scroll) */
 .lead-group{margin-bottom:14px}
 .lead-group-hdr{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 6px;margin:12px 0 6px;border-bottom:1px solid var(--line)}
@@ -293,8 +305,40 @@ dialog#about::backdrop{background:rgba(5,12,11,.55)}
     <div class="stage-bar" id="leadStages" role="group" aria-label="Filter leads by stage"></div>
     <div class="tutor-bar">
       <input type="search" id="leadQ" placeholder="Search name, subject, city or flyer" aria-label="Search tutoring leads">
-      <button class="chip" type="button" id="leadAllBtn" aria-pressed="true">All</button>
       <button class="chip" type="button" id="leadAddToggle" aria-expanded="false">+ Add lead</button>
+    </div>
+    <!-- Scrollable Filter Bar -->
+    <div class="filter-scroll-wrapper">
+      <div class="filter-pills" role="tablist" aria-label="Tutoring filters">
+        <!-- Default / Global -->
+        <button type="button" class="filter-pill active" role="tab" aria-selected="true" data-filter="all" onclick="applyTutoringFilter('all', this)">
+          All
+        </button>
+        <!-- Pipeline Stages -->
+        <button type="button" class="filter-pill" role="tab" aria-selected="false" data-filter="new" onclick="applyTutoringFilter('new', this)">
+          New <span class="pill-dot dot-new"></span>
+        </button>
+        <button type="button" class="filter-pill" role="tab" aria-selected="false" data-filter="contacted" onclick="applyTutoringFilter('contacted', this)">
+          Contacted
+        </button>
+        <button type="button" class="filter-pill" role="tab" aria-selected="false" data-filter="students" onclick="applyTutoringFilter('students', this)">
+          Active Students
+        </button>
+        <button type="button" class="filter-pill" role="tab" aria-selected="false" data-filter="closed" onclick="applyTutoringFilter('closed', this)">
+          Closed
+        </button>
+        <!-- Acquisition Sources -->
+        <button type="button" class="filter-pill" role="tab" aria-selected="false" data-filter="bark" onclick="applyTutoringFilter('bark', this)">
+          Bark Leads
+        </button>
+        <button type="button" class="filter-pill" role="tab" aria-selected="false" data-filter="gemini" onclick="applyTutoringFilter('gemini', this)">
+          Gemini Intake
+        </button>
+        <!-- Physical Tracking -->
+        <button type="button" class="filter-pill filter-pill-alert" role="tab" aria-selected="false" data-filter="restock" onclick="applyTutoringFilter('restock', this)">
+          Needs Restock ⚠️
+        </button>
+      </div>
     </div>
     <div id="leadAddWrap" hidden style="margin-bottom:10px">
       <form class="stack" id="leadForm" style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px">
@@ -722,6 +766,36 @@ function setTutorTab(tab){
 
 function loadLeads(){if(!window.DAYBOOK_API)return;fetch(DAYBOOK_API.url+'/leads',{headers:{'x-daybook-key':DAYBOOK_API.key}}).then(r=>r.ok?r.json():Promise.reject()).then(j=>{LIVE=j.leads||[];try{localStorage.setItem('daybook_live',JSON.stringify(LIVE))}catch(e){}renderLeads();renderFlyers();renderToday()}).catch(()=>{})}
 
+function renderFlyerCard(f,allLeads){
+ const isLow=f.rem<=2;
+ const statusPill=f.rem===0?'<span class="pill r">Empty · Restock</span>':isLow?`<span class="pill a">Low · ${f.rem} left</span>`:'<span class="pill g">Active</span>';
+ 
+ let tabElements='';
+ for(let i=0;i<f.total;i++){
+  const taken=i>=f.rem;
+  tabElements+=`<span class="tear-tab ${taken?'taken':(isLow?'low':'active')}" title="${taken?'Tab taken':'Tab '+(i+1)+' ready'}">${taken?'✕':(i+1)}</span>`;
+ }
+
+ const linked=allLeads.filter(l=>(l.s||'').toLowerCase().includes('flyer')&&((l.spot&&l.spot.toLowerCase()===f.n.toLowerCase())||(l.x||'').toLowerCase().includes(f.n.toLowerCase())));
+ const linkedHtml=linked.length
+  ?linked.map(l=>`<div class="flyer-lead-link" data-gotolead="${esc(l.id)}"><span>✦ Generated lead: <b>${esc(l.n)}</b> (${esc(l.d||'Tutee')})</span><span class="pill t" style="text-transform:capitalize">${esc(l.st)} &rsaquo;</span></div>`).join('')
+  :'';
+
+ return `<div class="flyer-card ${isLow?'low-stock':''}" id="fcard_${esc(f.id)}" data-status="flyer" data-source="flyer" data-needs-restock="${isLow?'true':'false'}" data-tabs-remaining="${f.rem}">`
+  +`<div class="flyer-top"><div><h4 class="flyer-name">${esc(f.n)}</h4><div class="flyer-area">${esc(f.loc||'Community board')}</div></div>${statusPill}</div>`
+  +`<div class="flyer-detail-row"><span>Posted: <b>${esc(f.date||'Recent')}</b></span><span>Calls/Inquiries: <b>${f.calls||0}</b></span></div>`
+  +`<div class="tear-strip"><div class="tear-strip-hdr"><span>Tear-offs remaining</span><b>${f.rem} / ${f.total} available</b></div><div class="tear-tabs-row">${tabElements}</div></div>`
+  +(f.notes?`<div class="lead-note-box">${esc(f.notes)}</div>`:'')
+  +linkedHtml
+  +`<div class="flyer-actions">`
+  +`<button class="btn sm p" type="button" data-frestock="${esc(f.id)}">🔄 Restock (${f.total})</button>`
+  +`<button class="btn sm" type="button" data-fpull="${esc(f.id)}" ${f.rem<=0?'disabled':''}>&minus; 1 Tab Pulled</button>`
+  +`<button class="btn sm" type="button" data-fcall="${esc(f.id)}">+ 1 Call (${f.calls||0})</button>`
+  +`<button class="chip" type="button" data-fdel="${esc(f.id)}" style="min-height:36px;padding:4px 9px;font-size:12px;margin-left:auto">Delete</button>`
+  +`</div>`
+  +`</div>`;
+}
+
 function renderFlyers(){
  const flyers=M.flyers||[],q=flyerQuery.toLowerCase();
  const totalSpots=flyers.length;
@@ -776,35 +850,26 @@ function renderFlyers(){
  }
 
  const allLeads=leadList();
- container.innerHTML=filtered.map(f=>{
-  const isLow=f.rem<=2;
-  const statusPill=f.rem===0?'<span class="pill r">Empty · Restock</span>':isLow?`<span class="pill a">Low · ${f.rem} left</span>`:'<span class="pill g">Active</span>';
-  
-  let tabElements='';
-  for(let i=0;i<f.total;i++){
-   const taken=i>=f.rem;
-   tabElements+=`<span class="tear-tab ${taken?'taken':(isLow?'low':'active')}" title="${taken?'Tab taken':'Tab '+(i+1)+' ready'}">${taken?'✕':(i+1)}</span>`;
-  }
+ container.innerHTML=filtered.map(f=>renderFlyerCard(f,allLeads)).join('');
+}
 
-  const linked=allLeads.filter(l=>(l.s||'').toLowerCase().includes('flyer')&&((l.spot&&l.spot.toLowerCase()===f.n.toLowerCase())||(l.x||'').toLowerCase().includes(f.n.toLowerCase())));
-  const linkedHtml=linked.length
-   ?linked.map(l=>`<div class="flyer-lead-link" data-gotolead="${esc(l.id)}"><span>✦ Generated lead: <b>${esc(l.n)}</b> (${esc(l.d||'Tutee')})</span><span class="pill t" style="text-transform:capitalize">${esc(l.st)} &rsaquo;</span></div>`).join('')
-   :'';
+function normLeadSource(l){
+ const s=(l.s||'').toLowerCase();
+ if(s.includes('gemini')||l.live)return 'gemini';
+ if(s.includes('bark'))return 'bark';
+ if(s.includes('flyer'))return 'flyer';
+ return s||'other';
+}
 
-  return `<div class="flyer-card ${isLow?'low-stock':''}" id="fcard_${esc(f.id)}">`
-   +`<div class="flyer-top"><div><h4 class="flyer-name">${esc(f.n)}</h4><div class="flyer-area">${esc(f.loc||'Community board')}</div></div>${statusPill}</div>`
-   +`<div class="flyer-detail-row"><span>Posted: <b>${esc(f.date||'Recent')}</b></span><span>Calls/Inquiries: <b>${f.calls||0}</b></span></div>`
-   +`<div class="tear-strip"><div class="tear-strip-hdr"><span>Tear-offs remaining</span><b>${f.rem} / ${f.total} available</b></div><div class="tear-tabs-row">${tabElements}</div></div>`
-   +(f.notes?`<div class="lead-note-box">${esc(f.notes)}</div>`:'')
-   +linkedHtml
-   +`<div class="flyer-actions">`
-   +`<button class="btn sm p" type="button" data-frestock="${esc(f.id)}">🔄 Restock (${f.total})</button>`
-   +`<button class="btn sm" type="button" data-fpull="${esc(f.id)}" ${f.rem<=0?'disabled':''}>&minus; 1 Tab Pulled</button>`
-   +`<button class="btn sm" type="button" data-fcall="${esc(f.id)}">+ 1 Call (${f.calls||0})</button>`
-   +`<button class="chip" type="button" data-fdel="${esc(f.id)}" style="min-height:36px;padding:4px 9px;font-size:12px;margin-left:auto">Delete</button>`
-   +`</div>`
-   +`</div>`;
- }).join('');
+function applyTutoringFilter(filterKey,pillElement){
+ leadFilter=filterKey||'all';
+ const pills=document.querySelectorAll('.filter-pills .filter-pill');
+ pills.forEach(btn=>{
+  const match=pillElement?btn===pillElement:btn.dataset.filter===leadFilter;
+  btn.classList.toggle('active',match);
+  btn.setAttribute('aria-selected',match?'true':'false');
+ });
+ renderLeads();
 }
 
 function renderLeads(){
@@ -820,10 +885,31 @@ function renderLeads(){
   badgeFlyers.className='pill '+(restock?'a':'t');
  }
 
+ const activeStage=leadFilter==='students'?'booked':leadFilter;
  const stBar=$('#leadStages');
- if(stBar)stBar.innerHTML=LST.map(g=>`<button type="button" class="stage-tile" data-lstf="${g[0]}" aria-pressed="${leadFilter===g[0]}"><b>${counts[g[0]]}</b><span>${g[2]}${g[0]==='booked'?'s':''}</span></button>`).join('');
- const allBtn=$('#leadAllBtn');
- if(allBtn)allBtn.setAttribute('aria-pressed',leadFilter==='all'?'true':'false');
+ if(stBar)stBar.innerHTML=LST.map(g=>`<button type="button" class="stage-tile" data-lstf="${g[0]}" aria-pressed="${activeStage===g[0]}"><b>${counts[g[0]]}</b><span>${g[2]}${g[0]==='booked'?'s':''}</span></button>`).join('');
+ const normalizedPill=leadFilter==='booked'?'students':leadFilter;
+ document.querySelectorAll('.filter-pills .filter-pill').forEach(btn=>{
+  const isAct=btn.dataset.filter===normalizedPill;
+  btn.classList.toggle('active',isAct);
+  btn.setAttribute('aria-selected',isAct?'true':'false');
+ });
+
+ const container=$('#leads');
+ if(!container)return;
+
+ if(leadFilter==='restock'){
+  const restockFlyers=(M.flyers||[]).filter(f=>{
+   if(f.rem>2)return false;
+   if(q&&!(f.n+' '+(f.loc||'')+' '+(f.notes||'')).toLowerCase().includes(q))return false;
+   return true;
+  });
+  container.innerHTML=restockFlyers.length
+   ?restockFlyers.map(f=>renderFlyerCard(f,allLeads)).join('')
+   :'<div class="lead-empty">'+(q?'No restock spots match your search.':'All flyer spots are stocked!')+'</div>';
+  updateWheelBadges();
+  return;
+ }
 
  const filtered=allLeads.filter(l=>!q||(l.n+' '+(l.d||'')+' '+(l.w||'')+' '+(l.s||'')+' '+(l.x||'')+' '+(l.spot||'')).toLowerCase().includes(q));
 
@@ -839,7 +925,7 @@ function renderLeads(){
    ?`<button type="button" class="pill a lead-source-btn" data-gotoflyer="${esc(l.spot||'')}" title="View in Flyer Tracker">📑 Flyer${l.spot?' &middot; '+esc(l.spot):''}</button>`
    :(l.s?`<span class="pill t">${esc(l.s)}${l.date?' '+esc(String(l.date).slice(5)):''}</span>`:'');
 
-  return `<div class="lead-card" id="leadcard_${esc(l.id)}">`
+  return `<div class="lead-card tutoring-card" id="leadcard_${esc(l.id)}" data-status="${esc(l.st==='booked'?'students':l.st)}" data-source="${esc(normLeadSource(l))}">`
    +`<div class="lead-top">`
    +`<div class="lead-title"><span class="lead-name">${esc(l.n)}</span>${l.d?`<span class="pill">${esc(l.d)}</span>`:''}</div>`
    +`<div class="row" style="gap:4px;flex-wrap:nowrap;flex-shrink:0">${l.live&&l.at&&(Date.now()-Date.parse(l.at))<864e5?'<span class="pill g">just in</span>':''}${sourcePill}${l.mine?`<button type="button" class="chip" data-ldel="${esc(l.id)}" style="min-height:24px;padding:2px 7px;font-size:11px">Delete</button>`:''}</div>`
@@ -850,10 +936,9 @@ function renderLeads(){
    +`</div>`;
  };
 
- const container=$('#leads');
- if(!container)return;
  if(!filtered.length){
   container.innerHTML='<div class="lead-empty">'+(q?'No leads match your search.':'No leads in this stage.')+'</div>';
+  updateWheelBadges();
   return;
  }
 
@@ -871,8 +956,13 @@ function renderLeads(){
     +`</div>`;
   }).join('');
  }else{
-  const G=filtered.filter(l=>l.st===leadFilter);
-  container.innerHTML=G.length?G.map(renderCard).join(''):'<div class="lead-empty">No leads in this stage.</div>';
+  const G=filtered.filter(l=>{
+   if(leadFilter==='bark')return (l.s||'').toLowerCase().includes('bark');
+   if(leadFilter==='gemini')return (l.s||'').toLowerCase().includes('gemini')||!!l.live||(l.x||'').toLowerCase().includes('gemini');
+   if(leadFilter==='students'||leadFilter==='booked')return l.st==='booked';
+   return l.st===leadFilter;
+  });
+  container.innerHTML=G.length?G.map(renderCard).join(''):'<div class="lead-empty">No leads match this filter.</div>';
  }
 
  updateWheelBadges();
@@ -885,7 +975,7 @@ function mine(){renderTodos();renderNotes('claude');renderNotes('gemini');render
 $('#todoForm').addEventListener('submit',e=>{e.preventDefault();const v=$('#todoIn').value.trim();if(!v)return;$('#todoIn').value='';addTodo(v)});
 document.querySelectorAll('form[data-ai]').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();const ta=f.querySelector('textarea'),v=ta.value.trim();if(!v)return;const ai=f.dataset.ai;(M.notes[ai]=M.notes[ai]||[]).push({id:uid(),t:v,ts:Date.now()});ta.value='';saveM();renderNotes(ai)}));
 
-const leadAddWrap=$('#leadAddWrap'),leadAddToggle=$('#leadAddToggle'),leadAddCancel=$('#leadAddCancel'),leadQEl=$('#leadQ'),leadAllBtn=$('#leadAllBtn');
+const leadAddWrap=$('#leadAddWrap'),leadAddToggle=$('#leadAddToggle'),leadAddCancel=$('#leadAddCancel'),leadQEl=$('#leadQ');
 function toggleLeadAdd(open){
  const show=open!==undefined?open:leadAddWrap.hidden;
  leadAddWrap.hidden=!show;
@@ -894,7 +984,6 @@ function toggleLeadAdd(open){
 }
 if(leadAddToggle)leadAddToggle.addEventListener('click',()=>toggleLeadAdd());
 if(leadAddCancel)leadAddCancel.addEventListener('click',()=>toggleLeadAdd(false));
-if(leadAllBtn)leadAllBtn.addEventListener('click',()=>{leadFilter='all';renderLeads()});
 if(leadQEl)leadQEl.addEventListener('input',e=>{leadQuery=e.target.value;renderLeads()});
 $('#leadForm').addEventListener('submit',e=>{e.preventDefault();const f=e.target,g=k=>f.elements[k].value.trim();if(!g('n'))return;M.myLeads.push({id:'m_'+uid(),n:g('n'),d:g('d'),w:g('w'),s:g('s'),x:g('x'),mine:1});f.reset();toggleLeadAdd(false);saveM();renderLeads();renderToday()});
 
@@ -931,12 +1020,12 @@ document.addEventListener('click',e=>{
  const b=e.target.closest('button, [data-gotoflyer], [data-gotolead]');if(!b)return;const d=b.dataset;
  if(d.ttab){setTutorTab(d.ttab)}
  else if(d.gotoflyer!==undefined){setTutorTab('flyers');if(d.gotoflyer){flyerQuery=d.gotoflyer;const fq=$('#flyerQ');if(fq)fq.value=d.gotoflyer;renderFlyers()}}
- else if(d.gotolead){setTutorTab('pipeline');leadFilter='all';renderLeads();const el=document.getElementById('leadcard_'+d.gotolead);if(el)el.scrollIntoView({behavior:'smooth',block:'center'})}
- else if(d.frestockall){(M.flyers||[]).forEach(f=>{if(f.rem<=2){f.rem=f.total;f.date=TODAY}});saveM();renderFlyers();renderToday()}
- else if(d.frestock){const f=(M.flyers||[]).find(x=>x.id===d.frestock);if(f){f.rem=f.total;f.date=TODAY;saveM();renderFlyers();renderToday()}}
- else if(d.fpull){const f=(M.flyers||[]).find(x=>x.id===d.fpull);if(f&&f.rem>0){f.rem--;saveM();renderFlyers();renderToday()}}
- else if(d.fcall){const f=(M.flyers||[]).find(x=>x.id===d.fcall);if(f){f.calls=(f.calls||0)+1;saveM();renderFlyers()}}
- else if(d.fdel){M.flyers=(M.flyers||[]).filter(x=>x.id!==d.fdel);saveM();renderFlyers();renderToday()}
+ else if(d.gotolead){setTutorTab('pipeline');applyTutoringFilter('all');const el=document.getElementById('leadcard_'+d.gotolead);if(el)el.scrollIntoView({behavior:'smooth',block:'center'})}
+ else if(d.frestockall){(M.flyers||[]).forEach(f=>{if(f.rem<=2){f.rem=f.total;f.date=TODAY}});saveM();renderFlyers();if(leadFilter==='restock')renderLeads();renderToday()}
+ else if(d.frestock){const f=(M.flyers||[]).find(x=>x.id===d.frestock);if(f){f.rem=f.total;f.date=TODAY;saveM();renderFlyers();if(leadFilter==='restock')renderLeads();renderToday()}}
+ else if(d.fpull){const f=(M.flyers||[]).find(x=>x.id===d.fpull);if(f&&f.rem>0){f.rem--;saveM();renderFlyers();if(leadFilter==='restock')renderLeads();renderToday()}}
+ else if(d.fcall){const f=(M.flyers||[]).find(x=>x.id===d.fcall);if(f){f.calls=(f.calls||0)+1;saveM();renderFlyers();if(leadFilter==='restock')renderLeads()}}
+ else if(d.fdel){M.flyers=(M.flyers||[]).filter(x=>x.id!==d.fdel);saveM();renderFlyers();if(leadFilter==='restock')renderLeads();renderToday()}
  else if(d.ff){flyerFilter=d.ff;renderFlyers()}
  else if(d.ttconnect){b.textContent='Opening TickTick...';api('/tt/login').then(j=>{location.href=j.url}).catch(x=>{b.textContent='Connect TickTick';alert(x.message)})}
  else if(d.ttreload){TT.state='loading';renderTodos();loadTT()}
@@ -948,14 +1037,14 @@ document.addEventListener('click',e=>{
  else if(d.nshare){const p=d.nshare.split(':');shareNote(p[0],p[1],b)}
  else if(d.ncopy){copyEl(document.getElementById('n_'+d.ncopy),b,'Copy')}
  else if(d.ndone||d.ndel){const k=(d.ndone||d.ndel).split(':'),L=M.notes[k[0]]||[];if(d.ndel)M.notes[k[0]]=L.filter(x=>x.id!==k[1]);else{const n=L.find(x=>x.id===k[1]);if(n)n.done=!n.done}saveM();renderNotes(k[0])}
- else if(d.lstf){leadFilter=leadFilter===d.lstf?'all':d.lstf;renderLeads()}
+ else if(d.lstf){const mapped=d.lstf==='booked'?'students':d.lstf;applyTutoringFilter(leadFilter===mapped||leadFilter===d.lstf?'all':mapped)}
  else if(d.lnoteopen){editingLeadNote=d.lnoteopen;renderLeads();const ta=document.querySelector('textarea[data-lnote="'+CSS.escape(d.lnoteopen)+'"]');if(ta)ta.focus()}
  else if(d.lnoteclose){editingLeadNote=null;renderLeads()}
  else if(d.lead){const o=M.leads[d.lead]=M.leads[d.lead]||{};o.st=d.st;saveM();renderLeads();renderToday()}
  else if(d.fakelead){const F=[['Zara','Gr 10 Science','Remote, Monday evenings'],['Liam','Gr 12 Data Management','In person, Saturdays'],['Sofia','Gr 11 Physics','Remote OK, after school'],['Owen','Gr 9 Math','In person, weekday afternoons']],f=F[LIVE.length%F.length];
   LIVE.unshift({id:'live_'+uid(),n:f[0],d:f[1],w:f[2],s:'Bark',x:'Arrived by email from Gemini, relayed by Apps Script to /api/leads.',date:TODAY,at:new Date().toISOString()});
   try{localStorage.setItem('daybook_live',JSON.stringify(LIVE))}catch(x){}
-  if(leadFilter!=='all'&&leadFilter!=='new')leadFilter='new';
+  if(leadFilter!=='all'&&leadFilter!=='new'&&leadFilter!=='gemini'&&leadFilter!=='bark')leadFilter='new';
   renderLeads();renderToday();b.textContent='Added to New ('+f[0]+') · Tap for another'}
  else if(d.ldel){M.myLeads=M.myLeads.filter(x=>x.id!==d.ldel);delete M.leads[d.ldel];saveM();renderLeads();renderToday()}
 });
