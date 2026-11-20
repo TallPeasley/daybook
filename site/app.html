@@ -305,6 +305,7 @@ dialog#about::backdrop{background:rgba(5,12,11,.55)}
     <div class="stage-bar" id="leadStages" role="group" aria-label="Filter leads by stage"></div>
     <div class="tutor-bar">
       <input type="search" id="leadQ" placeholder="Search name, subject, city or flyer" aria-label="Search tutoring leads">
+      <a class="chip" href="https://www.bark.com/sellers/dashboard/" target="_blank" rel="noopener" style="text-decoration:none">Bark &#8599;</a>
       <button class="chip" type="button" id="leadAddToggle" aria-expanded="false">+ Add lead</button>
     </div>
     <!-- Scrollable Filter Bar -->
@@ -932,6 +933,7 @@ function renderLeads(){
    +`</div>`
    +(l.w?`<div class="lead-meta">📍 ${esc(l.w)}</div>`:'')
    +noteArea
+   +(((l.s||'').toLowerCase().includes('bark')||/^bark_/i.test(l.id||''))?'<div class="row" style="gap:6px;margin:6px 0 8px"><a class="btn sm" href="https://www.bark.com/sellers/dashboard/" target="_blank" rel="noopener" style="text-decoration:none">Open Bark &#8599;</a></div>':'')
    +`<div class="stage-seg" role="group" aria-label="Stage for ${esc(l.n)}">${LST.map(s=>`<button type="button" data-lead="${esc(l.id)}" data-st="${s[0]}" aria-pressed="${l.st===s[0]}">${s[2]}</button>`).join('')}</div>`
    +`</div>`;
  };
